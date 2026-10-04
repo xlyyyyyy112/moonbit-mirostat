@@ -1,0 +1,149 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xlyyyyyy112/moonbit-mirostat/jsonio"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn batch_json(String) -> Result[String, String]
+
+pub fn batch_request(BatchRequest) -> Result[BatchResponse, String]
+
+pub fn init_json(String) -> Result[String, String]
+
+pub fn init_request(InitRequest) -> Result[InitResponse, String]
+
+pub fn preview_json(String) -> Result[String, String]
+
+pub fn preview_request(PreviewRequest) -> Result[PreviewResponse, String]
+
+pub fn replay_json(String) -> Result[String, String]
+
+pub fn replay_request(ReplayRequest) -> Result[ReplayResponse, String]
+
+pub fn sample_json(String) -> Result[String, String]
+
+pub fn sample_request(SamplingRequest) -> Result[SamplingResponse, String]
+
+pub fn session_json(String) -> Result[String, String]
+
+pub fn session_request(SessionRequest) -> Result[SessionResponse, String]
+
+pub fn weight_json(String) -> Result[String, String]
+
+pub fn weight_request(WeightRequest) -> Result[SamplingResponse, String]
+
+// Errors
+
+// Types and methods
+pub struct BatchRequest {
+  sessions : Array[SessionRequest]
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct BatchResponse {
+  sessions : Array[SessionResponse]
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn BatchResponse::sessions(Self) -> Array[SessionResponse]
+
+pub struct InitRequest {
+  tau : Double
+  eta : Double
+  version : String
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct InitResponse {
+  state_mu : Double
+  state_steps : Int
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn InitResponse::state_mu(Self) -> Double
+pub fn InitResponse::state_steps(Self) -> Int
+
+pub struct PreviewRequest {
+  logits : Array[Double]
+  tau : Double
+  eta : Double
+  version : String
+  state_mu : Double
+  state_steps : Int
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct PreviewResponse {
+  vocabulary : Int
+  kept_tokens : Int
+  retained_mass : Double
+  expected_surprise : Double
+  state_mu : Double
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn PreviewResponse::kept_tokens(Self) -> Int
+pub fn PreviewResponse::retained_mass(Self) -> Double
+
+pub struct ReplayRequest {
+  rows : Array[Array[Double]]
+  draws : Array[Double]
+  tau : Double
+  eta : Double
+  version : String
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct ReplayResponse {
+  steps : Array[SamplingResponse]
+  mean_surprise : Double
+  final_mu : Double
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn ReplayResponse::final_mu(Self) -> Double
+pub fn ReplayResponse::mean_surprise(Self) -> Double
+pub fn ReplayResponse::steps(Self) -> Array[SamplingResponse]
+
+pub struct SamplingRequest {
+  logits : Array[Double]
+  tau : Double
+  eta : Double
+  uniform : Double
+  version : String
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct SamplingResponse {
+  token : Int
+  kept_tokens : Int
+  probability : Double
+  surprise_bits : Double
+  mu_after : Double
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SamplingResponse::kept_tokens(Self) -> Int
+pub fn SamplingResponse::mu_after(Self) -> Double
+pub fn SamplingResponse::surprise_bits(Self) -> Double
+pub fn SamplingResponse::token(Self) -> Int
+
+pub struct SessionRequest {
+  logits : Array[Double]
+  tau : Double
+  eta : Double
+  uniform : Double
+  version : String
+  state_mu : Double
+  state_steps : Int
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+pub struct SessionResponse {
+  step : SamplingResponse
+  state_mu : Double
+  state_steps : Int
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SessionResponse::state_mu(Self) -> Double
+pub fn SessionResponse::state_steps(Self) -> Int
+pub fn SessionResponse::step(Self) -> SamplingResponse
+
+pub struct WeightRequest {
+  weights : Array[Double]
+  tau : Double
+  eta : Double
+  uniform : Double
+  version : String
+} derive(ToJson, @debug.Debug, @json.FromJson)
+
+// Type aliases
+
+// Traits
+

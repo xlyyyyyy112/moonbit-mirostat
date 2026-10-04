@@ -1,0 +1,4 @@
+import {
+  "xlyyyyyy112/moonbit-mirostat" @mirostat,
+  "moonbitlang/core/json",
+}
