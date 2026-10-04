@@ -32,10 +32,11 @@ jobs:
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
           irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
           "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
-      - name: Check, test, and verify generated files
+      - name: Check, build, test, and verify generated files
         run: |
           moon version --all
           moon check --target all --deny-warn
+          moon build --target all --deny-warn
           moon test --target all --deny-warn
           moon fmt
           git diff --exit-code
