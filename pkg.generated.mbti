@@ -1,0 +1,329 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xlyyyyyy112/moonbit-mirostat"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn allow_token_ids(Array[Double], Array[Int]) -> Result[Array[Double], SamplingError]
+
+pub fn bias_logits(Array[Double], Array[Double]) -> Result[Array[Double], SamplingError]
+
+pub fn block_token_ids(Array[Double], Array[Int]) -> Result[Array[Double], SamplingError]
+
+pub fn draw_candidates(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn draw_prefix(Array[Double], Array[Int], Int, Double) -> Result[Int, SamplingError]
+
+pub fn entropy(Array[Double]) -> Result[Double, SamplingError]
+
+pub fn epsilon_prefix_size(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn estimated_k(Double, Double, Int) -> Result[Int, SamplingError]
+
+pub fn expected_prefix_surprise(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+pub fn generate(Sampler, ParkMiller, (Array[Int]) -> Result[Array[Double], SamplingError], Int, Int?) -> Result[Generation, SamplingError]
+
+pub fn generate_from_prompt(Sampler, ParkMiller, (Array[Int]) -> Result[Array[Double], SamplingError], Array[Int], Int, Int?) -> Result[Generation, SamplingError]
+
+pub fn generate_stream(Sampler, ParkMiller, (Array[Int]) -> Result[Array[Double], SamplingError], Array[Int], Int, Int?, (Step) -> Bool) -> Result[StreamGeneration, SamplingError]
+
+pub fn mask_logits(Array[Double], Array[Bool]) -> Result[Array[Double], SamplingError]
+
+pub fn min_p_prefix_size(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn normalize_weights(Array[Double]) -> Result[Array[Double], SamplingError]
+
+pub fn penalize_counts(Array[Double], Array[Int], Double, Double) -> Result[Array[Double], SamplingError]
+
+pub fn penalize_repetition(Array[Double], Array[Int], Double) -> Result[Array[Double], SamplingError]
+
+pub fn perplexity(Double) -> Result[Double, SamplingError]
+
+pub fn prefix_entropy(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+pub fn prefix_kl(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+pub fn prefix_mass(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+pub fn prefix_surprise_variance(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+pub fn probabilities(Array[Double]) -> Result[Array[Double], SamplingError]
+
+pub fn rank(Array[Double]) -> Result[Array[Int], SamplingError]
+
+pub fn replay(Sampler, Array[Array[Double]], Array[Double]) -> Result[Array[Step], SamplingError]
+
+pub fn replay_atomic(Sampler, Array[Array[Double]], Array[Double]) -> Result[Array[Step], SamplingError]
+
+pub fn rolling_surprise(Array[Step], Int) -> Result[Array[Double], SamplingError]
+
+pub fn running_surprise(Array[Step]) -> Array[Double]
+
+pub fn sample_batch(Array[Sampler], Array[Array[Double]], Array[Double]) -> Result[Array[Step], SamplingError]
+
+pub fn sample_batch_atomic(Array[Sampler], Array[Array[Double]], Array[Double]) -> Result[Array[Step], SamplingError]
+
+pub fn sample_epsilon(Array[Double], Double, Double) -> Result[Int, SamplingError]
+
+pub fn sample_min_p(Array[Double], Double, Double) -> Result[Int, SamplingError]
+
+pub fn sample_shared_prepared(Array[Sampler], PreparedRow, Array[Double]) -> Result[Array[Step], SamplingError]
+
+pub fn sample_temperature(Array[Double], Double, Double) -> Result[Int, SamplingError]
+
+pub fn sample_top_k(Array[Double], Int, Double) -> Result[Int, SamplingError]
+
+pub fn sample_top_p(Array[Double], Double, Double) -> Result[Int, SamplingError]
+
+pub fn sample_typical(Array[Double], Double, Double) -> Result[Int, SamplingError]
+
+pub fn summarize(Array[Step], Double) -> Result[TraceSummary, SamplingError]
+
+pub fn surprise(Double) -> Result[Double, SamplingError]
+
+pub fn top_indices(Array[Double], Int) -> Result[Array[Int], SamplingError]
+
+pub fn top_p_prefix_size(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn trace_spread(Array[Step]) -> Result[TraceSpread, SamplingError]
+
+pub fn typical_order(Array[Double]) -> Result[Array[Int], SamplingError]
+
+pub fn typical_prefix_size(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn v2_prefix_size(Array[Double], Array[Int], Double) -> Result[Int, SamplingError]
+
+pub fn with_temperature(Array[Double], Double) -> Result[Array[Double], SamplingError]
+
+pub fn zipf_exponent(Array[Double], Array[Int], Int) -> Result[Double, SamplingError]
+
+// Errors
+
+// Types and methods
+pub struct CandidateSet {
+  tokens : Array[Int]
+  conditional : Array[Double]
+  original : Array[Double]
+  mu : Double
+} derive(@debug.Debug)
+pub fn CandidateSet::conditional(Self) -> Array[Double]
+pub fn CandidateSet::conditional_probability(Self, Int) -> Double?
+pub fn CandidateSet::mu(Self) -> Double
+pub fn CandidateSet::original(Self) -> Array[Double]
+pub fn CandidateSet::original_probability(Self, Int) -> Double?
+pub fn CandidateSet::position(Self, Int) -> Int?
+pub fn CandidateSet::tokens(Self) -> Array[Int]
+
+pub struct Checkpoint {
+  config : Config
+  version : Version
+  mu : Double
+  steps : Int
+} derive(Eq, @debug.Debug)
+pub fn Checkpoint::mu(Self) -> Double
+pub fn Checkpoint::steps(Self) -> Int
+
+pub struct Config {
+  tau : Double
+  eta : Double
+  initial_mu : Double
+  m : Int
+} derive(Eq, @debug.Debug)
+pub fn Config::eta(Self) -> Double
+pub fn Config::initial_mu(Self) -> Double
+pub fn Config::m(Self) -> Int
+pub fn Config::new(Double, eta? : Double, initial_mu? : Double, m? : Int) -> Result[Self, SamplingError]
+pub fn Config::tau(Self) -> Double
+
+pub struct Generation {
+  tokens : Array[Int]
+  steps : Array[Step]
+  reason : StopReason
+} derive(Eq, @debug.Debug)
+pub fn Generation::reason(Self) -> StopReason
+pub fn Generation::steps(Self) -> Array[Step]
+pub fn Generation::tokens(Self) -> Array[Int]
+
+pub struct ParkMiller {
+  mut state : Int
+} derive(@debug.Debug)
+pub fn ParkMiller::new(Int) -> Result[Self, SamplingError]
+pub fn ParkMiller::next_int(Self) -> Int
+pub fn ParkMiller::next_uniform(Self) -> Double
+pub fn ParkMiller::state(Self) -> Int
+
+pub struct PreparedRow {
+  probabilities : Array[Double]
+  order : Array[Int]
+} derive(@debug.Debug)
+pub fn PreparedRow::from_logits(Array[Double]) -> Result[Self, SamplingError]
+pub fn PreparedRow::from_weights(Array[Double]) -> Result[Self, SamplingError]
+pub fn PreparedRow::probability(Self, Int) -> Result[Double, SamplingError]
+pub fn PreparedRow::vocabulary(Self) -> Int
+
+pub struct Preview {
+  vocabulary : Int
+  kept_tokens : Int
+  retained_mass : Double
+  expected_surprise : Double
+  mu : Double
+} derive(Eq, @debug.Debug)
+pub fn Preview::expected_surprise(Self) -> Double
+pub fn Preview::kept_tokens(Self) -> Int
+pub fn Preview::mu(Self) -> Double
+pub fn Preview::retained_mass(Self) -> Double
+pub fn Preview::vocabulary(Self) -> Int
+
+pub struct Sampler {
+  config : Config
+  version : Version
+  mut mu : Double
+  mut steps : Int
+} derive(@debug.Debug)
+pub fn Sampler::candidates(Self, Array[Double]) -> Result[CandidateSet, SamplingError]
+pub fn Sampler::candidates_weights(Self, Array[Double]) -> Result[CandidateSet, SamplingError]
+pub fn Sampler::checkpoint(Self) -> Checkpoint
+pub fn Sampler::fork(Self) -> Self
+pub fn Sampler::from_state(Config, Version, SamplerState) -> Self
+pub fn Sampler::mu(Self) -> Double
+pub fn Sampler::new(Config, version? : Version) -> Self
+pub fn Sampler::observe_prepared_token(Self, PreparedRow, Int) -> Result[Step, SamplingError]
+pub fn Sampler::observe_token(Self, Array[Double], Int) -> Result[Step, SamplingError]
+pub fn Sampler::observe_weighted_token(Self, Array[Double], Int) -> Result[Step, SamplingError]
+pub fn Sampler::preview(Self, Array[Double]) -> Result[Preview, SamplingError]
+pub fn Sampler::preview_prepared(Self, PreparedRow) -> Result[Preview, SamplingError]
+pub fn Sampler::preview_weights(Self, Array[Double]) -> Result[Preview, SamplingError]
+pub fn Sampler::reset(Self) -> Unit
+pub fn Sampler::restore(Self, Checkpoint) -> Result[Unit, SamplingError]
+pub fn Sampler::sample(Self, Array[Double], Double) -> Result[Step, SamplingError]
+pub fn Sampler::sample_prepared(Self, PreparedRow, Double) -> Result[Step, SamplingError]
+pub fn Sampler::sample_weights(Self, Array[Double], Double) -> Result[Step, SamplingError]
+pub fn Sampler::sample_with_rng(Self, Array[Double], ParkMiller) -> Result[Step, SamplingError]
+pub fn Sampler::state(Self) -> SamplerState
+pub fn Sampler::steps(Self) -> Int
+pub fn Sampler::version(Self) -> Version
+
+pub struct SamplerState {
+  mu : Double
+  steps : Int
+} derive(Eq, @debug.Debug)
+pub fn SamplerState::mu(Self) -> Double
+pub fn SamplerState::new(Double, Int) -> Result[Self, SamplingError]
+pub fn SamplerState::steps(Self) -> Int
+
+pub enum SamplingError {
+  EmptyLogits
+  AllMasked
+  NonFiniteLogit(Int)
+  InvalidUniform
+  InvalidProbability(Int)
+  InvalidParameter(String)
+  NumericalFailure
+} derive(Eq, @debug.Debug)
+pub fn SamplingError::invalid_parameter(String) -> Self
+pub fn SamplingError::message(Self) -> String
+
+pub struct Step {
+  token : Int
+  original_probability : Double
+  observed_surprise : Double
+  kept_tokens : Int
+  mu_before : Double
+  mu_after : Double
+} derive(Eq, @debug.Debug)
+pub fn Step::kept_tokens(Self) -> Int
+pub fn Step::mu_after(Self) -> Double
+pub fn Step::mu_before(Self) -> Double
+pub fn Step::observed_surprise(Self) -> Double
+pub fn Step::original_probability(Self) -> Double
+pub fn Step::token(Self) -> Int
+
+pub enum StopReason {
+  Limit
+  EndToken
+  Observer
+} derive(Eq, @debug.Debug)
+pub fn StopReason::end_token() -> Self
+pub fn StopReason::limit() -> Self
+pub fn StopReason::observer() -> Self
+
+pub struct StreamGeneration {
+  tokens : Array[Int]
+  reason : StopReason
+} derive(Eq, @debug.Debug)
+pub fn StreamGeneration::count(Self) -> Int
+pub fn StreamGeneration::reason(Self) -> StopReason
+pub fn StreamGeneration::tokens(Self) -> Array[Int]
+
+pub struct SurpriseWindow {
+  capacity : Int
+  values : Array[Double]
+  mut next : Int
+  mut count : Int
+  mut total : Double
+} derive(@debug.Debug)
+pub fn SurpriseWindow::capacity(Self) -> Int
+pub fn SurpriseWindow::clear(Self) -> Unit
+pub fn SurpriseWindow::count(Self) -> Int
+pub fn SurpriseWindow::mean(Self) -> Result[Double, SamplingError]
+pub fn SurpriseWindow::new(Int) -> Result[Self, SamplingError]
+pub fn SurpriseWindow::push(Self, Double) -> Result[Unit, SamplingError]
+pub fn SurpriseWindow::push_step(Self, Step) -> Result[Unit, SamplingError]
+
+pub struct TraceAccumulator {
+  target : Double
+  mut count : Int
+  mut total_surprise : Double
+  mut total_kept : Double
+  mut absolute_error : Double
+  mut final_mu : Double
+} derive(@debug.Debug)
+pub fn TraceAccumulator::count(Self) -> Int
+pub fn TraceAccumulator::new(Double) -> Result[Self, SamplingError]
+pub fn TraceAccumulator::push(Self, Step) -> Result[Unit, SamplingError]
+pub fn TraceAccumulator::summary(Self) -> Result[TraceSummary, SamplingError]
+
+pub struct TraceSpread {
+  minimum : Double
+  maximum : Double
+  variance : Double
+  median : Double
+  p90 : Double
+  minimum_kept : Int
+  maximum_kept : Int
+} derive(Eq, @debug.Debug)
+pub fn TraceSpread::maximum(Self) -> Double
+pub fn TraceSpread::maximum_kept(Self) -> Int
+pub fn TraceSpread::median(Self) -> Double
+pub fn TraceSpread::minimum(Self) -> Double
+pub fn TraceSpread::minimum_kept(Self) -> Int
+pub fn TraceSpread::p90(Self) -> Double
+pub fn TraceSpread::variance(Self) -> Double
+
+pub struct TraceSummary {
+  count : Int
+  mean_surprise : Double
+  mean_kept : Double
+  mean_absolute_error : Double
+  final_mu : Double
+} derive(Eq, @debug.Debug)
+pub fn TraceSummary::count(Self) -> Int
+pub fn TraceSummary::final_mu(Self) -> Double
+pub fn TraceSummary::mean_absolute_error(Self) -> Double
+pub fn TraceSummary::mean_kept(Self) -> Double
+pub fn TraceSummary::mean_surprise(Self) -> Double
+
+pub enum Version {
+  V1
+  V2
+} derive(Eq, @debug.Debug)
+pub fn Version::v1() -> Self
+pub fn Version::v2() -> Self
+
+// Type aliases
+
+// Traits
+

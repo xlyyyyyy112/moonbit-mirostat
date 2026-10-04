@@ -1,0 +1,6 @@
+import {
+  "xlyyyyyy112/moonbit-mirostat" @mirostat,
+  "xlyyyyyy112/moonbit-mirostat/experiments",
+}
+
+pkgtype(kind: "executable")
