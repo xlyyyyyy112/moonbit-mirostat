@@ -65,7 +65,7 @@ pub fn sweep_targets(
       Ok(value) => value
       Err(error) => return Err(error)
     }
-    points.push({ target, comparison })
+    points.push({ target, comparison, })
   }
   Ok(points)
 }

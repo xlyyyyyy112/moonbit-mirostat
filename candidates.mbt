@@ -111,5 +111,5 @@ fn Sampler::candidates_distribution(
     return Err(NumericalFailure)
   }
   let conditional = original.map(fn(value) { value / mass })
-  Ok({ tokens, conditional, original, mu: self.mu })
+  Ok({ tokens, conditional, original, mu: self.mu, })
 }

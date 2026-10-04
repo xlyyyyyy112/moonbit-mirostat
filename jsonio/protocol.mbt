@@ -457,7 +457,7 @@ pub fn init_request(request : InitRequest) -> Result[InitResponse, String] {
     Err(message) => return Err(message)
   }
   let sampler = @mirostat.Sampler::new(config, version~)
-  Ok({ state_mu: sampler.mu(), state_steps: sampler.steps() })
+  Ok({ state_mu: sampler.mu(), state_steps: sampler.steps(), })
 }
 
 ///|

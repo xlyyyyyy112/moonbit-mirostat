@@ -57,9 +57,12 @@ pub enum Baseline {
   Typical(Double)
 } derive(Eq, @debug.Debug)
 pub fn Baseline::epsilon(Double) -> Self
+pub fn Baseline::equal(Self, Self) -> Bool
 pub fn Baseline::min_p(Double) -> Self
+pub fn Baseline::not_equal(Self, Self) -> Bool
 pub fn Baseline::sample(Self, Array[Double], Double) -> Result[Int, @moonbit-mirostat.SamplingError]
 pub fn Baseline::temperature(Double) -> Self
+pub fn Baseline::to_repr(Self) -> @debug.Repr
 pub fn Baseline::top_k(Int) -> Self
 pub fn Baseline::top_p(Double) -> Self
 pub fn Baseline::typical(Double) -> Self
@@ -69,15 +72,21 @@ pub struct BaselineStep {
   original_probability : Double
   observed_surprise : Double
 } derive(Eq, @debug.Debug)
+pub fn BaselineStep::equal(Self, Self) -> Bool
+pub fn BaselineStep::not_equal(Self, Self) -> Bool
 pub fn BaselineStep::observed_surprise(Self) -> Double
 pub fn BaselineStep::original_probability(Self) -> Double
+pub fn BaselineStep::to_repr(Self) -> @debug.Repr
 pub fn BaselineStep::token(Self) -> Int
 
 pub struct Comparison {
   v1 : @moonbit-mirostat.TraceSummary
   v2 : @moonbit-mirostat.TraceSummary
 } derive(Eq, @debug.Debug)
+pub fn Comparison::equal(Self, Self) -> Bool
 pub fn Comparison::mean_surprise_gap(Self) -> Double
+pub fn Comparison::not_equal(Self, Self) -> Bool
+pub fn Comparison::to_repr(Self) -> @debug.Repr
 pub fn Comparison::v1(Self) -> @moonbit-mirostat.TraceSummary
 pub fn Comparison::v2(Self) -> @moonbit-mirostat.TraceSummary
 
@@ -92,8 +101,11 @@ pub enum Scenario {
 pub fn Scenario::alternating_zipf(Double, Double) -> Self
 pub fn Scenario::bimodal() -> Self
 pub fn Scenario::drifting_zipf(Double, Double) -> Self
+pub fn Scenario::equal(Self, Self) -> Bool
+pub fn Scenario::not_equal(Self, Self) -> Bool
 pub fn Scenario::spike_and_tail() -> Self
 pub fn Scenario::static_zipf(Double) -> Self
+pub fn Scenario::to_repr(Self) -> @debug.Repr
 pub fn Scenario::uniform() -> Self
 
 pub struct SweepPoint {
@@ -101,11 +113,13 @@ pub struct SweepPoint {
   comparison : Comparison
 } derive(Eq, @debug.Debug)
 pub fn SweepPoint::comparison(Self) -> Comparison
+pub fn SweepPoint::equal(Self, Self) -> Bool
+pub fn SweepPoint::not_equal(Self, Self) -> Bool
 pub fn SweepPoint::target(Self) -> Double
+pub fn SweepPoint::to_repr(Self) -> @debug.Repr
 pub fn SweepPoint::v1_error(Self) -> Double
 pub fn SweepPoint::v2_error(Self) -> Double
 
 // Type aliases
 
 // Traits
-

@@ -26,7 +26,7 @@ pub fn Config::new(
   if m < 2 {
     return Err(InvalidParameter("m must be at least two"))
   }
-  Ok({ tau, eta, initial_mu, m })
+  Ok({ tau, eta, initial_mu, m, })
 }
 
 ///|
@@ -116,7 +116,7 @@ pub struct Sampler {
 
 ///|
 pub fn Sampler::new(config : Config, version? : Version = V1) -> Sampler {
-  { config, version, mu: config.initial_mu, steps: 0 }
+  { config, version, mu: config.initial_mu, steps: 0, }
 }
 
 ///|

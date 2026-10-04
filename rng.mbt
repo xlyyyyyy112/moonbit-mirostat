@@ -10,7 +10,7 @@ pub fn ParkMiller::new(seed : Int) -> Result[ParkMiller, SamplingError] {
   if seed <= 0 || seed >= 2147483647 {
     return Err(InvalidParameter("seed must be in 1..2147483646"))
   }
-  Ok({ state: seed })
+  Ok({ state: seed, })
 }
 
 ///|

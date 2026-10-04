@@ -41,24 +41,36 @@ pub fn weight_request(WeightRequest) -> Result[SamplingResponse, String]
 pub struct BatchRequest {
   sessions : Array[SessionRequest]
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn BatchRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn BatchRequest::to_json(Self) -> Json
+pub fn BatchRequest::to_repr(Self) -> @debug.Repr
 
 pub struct BatchResponse {
   sessions : Array[SessionResponse]
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn BatchResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn BatchResponse::sessions(Self) -> Array[SessionResponse]
+pub fn BatchResponse::to_json(Self) -> Json
+pub fn BatchResponse::to_repr(Self) -> @debug.Repr
 
 pub struct InitRequest {
   tau : Double
   eta : Double
   version : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn InitRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn InitRequest::to_json(Self) -> Json
+pub fn InitRequest::to_repr(Self) -> @debug.Repr
 
 pub struct InitResponse {
   state_mu : Double
   state_steps : Int
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn InitResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn InitResponse::state_mu(Self) -> Double
 pub fn InitResponse::state_steps(Self) -> Int
+pub fn InitResponse::to_json(Self) -> Json
+pub fn InitResponse::to_repr(Self) -> @debug.Repr
 
 pub struct PreviewRequest {
   logits : Array[Double]
@@ -68,6 +80,9 @@ pub struct PreviewRequest {
   state_mu : Double
   state_steps : Int
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn PreviewRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn PreviewRequest::to_json(Self) -> Json
+pub fn PreviewRequest::to_repr(Self) -> @debug.Repr
 
 pub struct PreviewResponse {
   vocabulary : Int
@@ -76,8 +91,11 @@ pub struct PreviewResponse {
   expected_surprise : Double
   state_mu : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn PreviewResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn PreviewResponse::kept_tokens(Self) -> Int
 pub fn PreviewResponse::retained_mass(Self) -> Double
+pub fn PreviewResponse::to_json(Self) -> Json
+pub fn PreviewResponse::to_repr(Self) -> @debug.Repr
 
 pub struct ReplayRequest {
   rows : Array[Array[Double]]
@@ -86,6 +104,9 @@ pub struct ReplayRequest {
   eta : Double
   version : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn ReplayRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn ReplayRequest::to_json(Self) -> Json
+pub fn ReplayRequest::to_repr(Self) -> @debug.Repr
 
 pub struct ReplayResponse {
   steps : Array[SamplingResponse]
@@ -93,8 +114,11 @@ pub struct ReplayResponse {
   final_mu : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn ReplayResponse::final_mu(Self) -> Double
+pub fn ReplayResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn ReplayResponse::mean_surprise(Self) -> Double
 pub fn ReplayResponse::steps(Self) -> Array[SamplingResponse]
+pub fn ReplayResponse::to_json(Self) -> Json
+pub fn ReplayResponse::to_repr(Self) -> @debug.Repr
 
 pub struct SamplingRequest {
   logits : Array[Double]
@@ -103,6 +127,9 @@ pub struct SamplingRequest {
   uniform : Double
   version : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SamplingRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn SamplingRequest::to_json(Self) -> Json
+pub fn SamplingRequest::to_repr(Self) -> @debug.Repr
 
 pub struct SamplingResponse {
   token : Int
@@ -111,9 +138,12 @@ pub struct SamplingResponse {
   surprise_bits : Double
   mu_after : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SamplingResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SamplingResponse::kept_tokens(Self) -> Int
 pub fn SamplingResponse::mu_after(Self) -> Double
 pub fn SamplingResponse::surprise_bits(Self) -> Double
+pub fn SamplingResponse::to_json(Self) -> Json
+pub fn SamplingResponse::to_repr(Self) -> @debug.Repr
 pub fn SamplingResponse::token(Self) -> Int
 
 pub struct SessionRequest {
@@ -125,15 +155,21 @@ pub struct SessionRequest {
   state_mu : Double
   state_steps : Int
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SessionRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn SessionRequest::to_json(Self) -> Json
+pub fn SessionRequest::to_repr(Self) -> @debug.Repr
 
 pub struct SessionResponse {
   step : SamplingResponse
   state_mu : Double
   state_steps : Int
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn SessionResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SessionResponse::state_mu(Self) -> Double
 pub fn SessionResponse::state_steps(Self) -> Int
 pub fn SessionResponse::step(Self) -> SamplingResponse
+pub fn SessionResponse::to_json(Self) -> Json
+pub fn SessionResponse::to_repr(Self) -> @debug.Repr
 
 pub struct WeightRequest {
   weights : Array[Double]
@@ -142,8 +178,10 @@ pub struct WeightRequest {
   uniform : Double
   version : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn WeightRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn WeightRequest::to_json(Self) -> Json
+pub fn WeightRequest::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

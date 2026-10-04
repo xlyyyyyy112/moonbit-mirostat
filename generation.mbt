@@ -77,7 +77,7 @@ pub fn generate_from_prompt(
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  Ok({ tokens: result.tokens(), steps, reason: result.reason() })
+  Ok({ tokens: result.tokens(), steps, reason: result.reason(), })
 }
 
 ///|
@@ -148,13 +148,13 @@ pub fn generate_stream(
     match end_token {
       Some(token) =>
         if step.token() == token {
-          return Ok({ tokens, reason: EndToken })
+          return Ok({ tokens, reason: EndToken, })
         }
       None => ()
     }
     if !keep_going {
-      return Ok({ tokens, reason: Observer })
+      return Ok({ tokens, reason: Observer, })
     }
   }
-  Ok({ tokens, reason: Limit })
+  Ok({ tokens, reason: Limit, })
 }

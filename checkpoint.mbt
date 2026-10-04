@@ -20,7 +20,12 @@ pub fn Checkpoint::steps(self : Checkpoint) -> Int {
 
 ///|
 pub fn Sampler::checkpoint(self : Sampler) -> Checkpoint {
-  { config: self.config, version: self.version, mu: self.mu, steps: self.steps }
+  {
+    config: self.config,
+    version: self.version,
+    mu: self.mu,
+    steps: self.steps,
+  }
 }
 
 ///|
@@ -40,5 +45,10 @@ pub fn Sampler::restore(
 /// Copy a sampler's feedback state into a separate mutable session. This
 /// supports branching generation without sharing subsequent feedback.
 pub fn Sampler::fork(self : Sampler) -> Sampler {
-  { config: self.config, version: self.version, mu: self.mu, steps: self.steps }
+  {
+    config: self.config,
+    version: self.version,
+    mu: self.mu,
+    steps: self.steps,
+  }
 }

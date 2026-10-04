@@ -36,7 +36,7 @@ fn PreparedRow::from_normalized(
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  Ok({ probabilities: p, order })
+  Ok({ probabilities: p, order, })
 }
 
 ///|

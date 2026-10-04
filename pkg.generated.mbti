@@ -115,6 +115,7 @@ pub fn CandidateSet::mu(Self) -> Double
 pub fn CandidateSet::original(Self) -> Array[Double]
 pub fn CandidateSet::original_probability(Self, Int) -> Double?
 pub fn CandidateSet::position(Self, Int) -> Int?
+pub fn CandidateSet::to_repr(Self) -> @debug.Repr
 pub fn CandidateSet::tokens(Self) -> Array[Int]
 
 pub struct Checkpoint {
@@ -123,8 +124,11 @@ pub struct Checkpoint {
   mu : Double
   steps : Int
 } derive(Eq, @debug.Debug)
+pub fn Checkpoint::equal(Self, Self) -> Bool
 pub fn Checkpoint::mu(Self) -> Double
+pub fn Checkpoint::not_equal(Self, Self) -> Bool
 pub fn Checkpoint::steps(Self) -> Int
+pub fn Checkpoint::to_repr(Self) -> @debug.Repr
 
 pub struct Config {
   tau : Double
@@ -132,19 +136,25 @@ pub struct Config {
   initial_mu : Double
   m : Int
 } derive(Eq, @debug.Debug)
+pub fn Config::equal(Self, Self) -> Bool
 pub fn Config::eta(Self) -> Double
 pub fn Config::initial_mu(Self) -> Double
 pub fn Config::m(Self) -> Int
 pub fn Config::new(Double, eta? : Double, initial_mu? : Double, m? : Int) -> Result[Self, SamplingError]
+pub fn Config::not_equal(Self, Self) -> Bool
 pub fn Config::tau(Self) -> Double
+pub fn Config::to_repr(Self) -> @debug.Repr
 
 pub struct Generation {
   tokens : Array[Int]
   steps : Array[Step]
   reason : StopReason
 } derive(Eq, @debug.Debug)
+pub fn Generation::equal(Self, Self) -> Bool
+pub fn Generation::not_equal(Self, Self) -> Bool
 pub fn Generation::reason(Self) -> StopReason
 pub fn Generation::steps(Self) -> Array[Step]
+pub fn Generation::to_repr(Self) -> @debug.Repr
 pub fn Generation::tokens(Self) -> Array[Int]
 
 pub struct ParkMiller {
@@ -154,6 +164,7 @@ pub fn ParkMiller::new(Int) -> Result[Self, SamplingError]
 pub fn ParkMiller::next_int(Self) -> Int
 pub fn ParkMiller::next_uniform(Self) -> Double
 pub fn ParkMiller::state(Self) -> Int
+pub fn ParkMiller::to_repr(Self) -> @debug.Repr
 
 pub struct PreparedRow {
   probabilities : Array[Double]
@@ -162,6 +173,7 @@ pub struct PreparedRow {
 pub fn PreparedRow::from_logits(Array[Double]) -> Result[Self, SamplingError]
 pub fn PreparedRow::from_weights(Array[Double]) -> Result[Self, SamplingError]
 pub fn PreparedRow::probability(Self, Int) -> Result[Double, SamplingError]
+pub fn PreparedRow::to_repr(Self) -> @debug.Repr
 pub fn PreparedRow::vocabulary(Self) -> Int
 
 pub struct Preview {
@@ -171,10 +183,13 @@ pub struct Preview {
   expected_surprise : Double
   mu : Double
 } derive(Eq, @debug.Debug)
+pub fn Preview::equal(Self, Self) -> Bool
 pub fn Preview::expected_surprise(Self) -> Double
 pub fn Preview::kept_tokens(Self) -> Int
 pub fn Preview::mu(Self) -> Double
+pub fn Preview::not_equal(Self, Self) -> Bool
 pub fn Preview::retained_mass(Self) -> Double
+pub fn Preview::to_repr(Self) -> @debug.Repr
 pub fn Preview::vocabulary(Self) -> Int
 
 pub struct Sampler {
@@ -204,15 +219,19 @@ pub fn Sampler::sample_weights(Self, Array[Double], Double) -> Result[Step, Samp
 pub fn Sampler::sample_with_rng(Self, Array[Double], ParkMiller) -> Result[Step, SamplingError]
 pub fn Sampler::state(Self) -> SamplerState
 pub fn Sampler::steps(Self) -> Int
+pub fn Sampler::to_repr(Self) -> @debug.Repr
 pub fn Sampler::version(Self) -> Version
 
 pub struct SamplerState {
   mu : Double
   steps : Int
 } derive(Eq, @debug.Debug)
+pub fn SamplerState::equal(Self, Self) -> Bool
 pub fn SamplerState::mu(Self) -> Double
 pub fn SamplerState::new(Double, Int) -> Result[Self, SamplingError]
+pub fn SamplerState::not_equal(Self, Self) -> Bool
 pub fn SamplerState::steps(Self) -> Int
+pub fn SamplerState::to_repr(Self) -> @debug.Repr
 
 pub enum SamplingError {
   EmptyLogits
@@ -223,8 +242,11 @@ pub enum SamplingError {
   InvalidParameter(String)
   NumericalFailure
 } derive(Eq, @debug.Debug)
+pub fn SamplingError::equal(Self, Self) -> Bool
 pub fn SamplingError::invalid_parameter(String) -> Self
 pub fn SamplingError::message(Self) -> String
+pub fn SamplingError::not_equal(Self, Self) -> Bool
+pub fn SamplingError::to_repr(Self) -> @debug.Repr
 
 pub struct Step {
   token : Int
@@ -234,11 +256,14 @@ pub struct Step {
   mu_before : Double
   mu_after : Double
 } derive(Eq, @debug.Debug)
+pub fn Step::equal(Self, Self) -> Bool
 pub fn Step::kept_tokens(Self) -> Int
 pub fn Step::mu_after(Self) -> Double
 pub fn Step::mu_before(Self) -> Double
+pub fn Step::not_equal(Self, Self) -> Bool
 pub fn Step::observed_surprise(Self) -> Double
 pub fn Step::original_probability(Self) -> Double
+pub fn Step::to_repr(Self) -> @debug.Repr
 pub fn Step::token(Self) -> Int
 
 pub enum StopReason {
@@ -247,15 +272,21 @@ pub enum StopReason {
   Observer
 } derive(Eq, @debug.Debug)
 pub fn StopReason::end_token() -> Self
+pub fn StopReason::equal(Self, Self) -> Bool
 pub fn StopReason::limit() -> Self
+pub fn StopReason::not_equal(Self, Self) -> Bool
 pub fn StopReason::observer() -> Self
+pub fn StopReason::to_repr(Self) -> @debug.Repr
 
 pub struct StreamGeneration {
   tokens : Array[Int]
   reason : StopReason
 } derive(Eq, @debug.Debug)
 pub fn StreamGeneration::count(Self) -> Int
+pub fn StreamGeneration::equal(Self, Self) -> Bool
+pub fn StreamGeneration::not_equal(Self, Self) -> Bool
 pub fn StreamGeneration::reason(Self) -> StopReason
+pub fn StreamGeneration::to_repr(Self) -> @debug.Repr
 pub fn StreamGeneration::tokens(Self) -> Array[Int]
 
 pub struct SurpriseWindow {
@@ -272,6 +303,7 @@ pub fn SurpriseWindow::mean(Self) -> Result[Double, SamplingError]
 pub fn SurpriseWindow::new(Int) -> Result[Self, SamplingError]
 pub fn SurpriseWindow::push(Self, Double) -> Result[Unit, SamplingError]
 pub fn SurpriseWindow::push_step(Self, Step) -> Result[Unit, SamplingError]
+pub fn SurpriseWindow::to_repr(Self) -> @debug.Repr
 
 pub struct TraceAccumulator {
   target : Double
@@ -285,6 +317,7 @@ pub fn TraceAccumulator::count(Self) -> Int
 pub fn TraceAccumulator::new(Double) -> Result[Self, SamplingError]
 pub fn TraceAccumulator::push(Self, Step) -> Result[Unit, SamplingError]
 pub fn TraceAccumulator::summary(Self) -> Result[TraceSummary, SamplingError]
+pub fn TraceAccumulator::to_repr(Self) -> @debug.Repr
 
 pub struct TraceSpread {
   minimum : Double
@@ -295,12 +328,15 @@ pub struct TraceSpread {
   minimum_kept : Int
   maximum_kept : Int
 } derive(Eq, @debug.Debug)
+pub fn TraceSpread::equal(Self, Self) -> Bool
 pub fn TraceSpread::maximum(Self) -> Double
 pub fn TraceSpread::maximum_kept(Self) -> Int
 pub fn TraceSpread::median(Self) -> Double
 pub fn TraceSpread::minimum(Self) -> Double
 pub fn TraceSpread::minimum_kept(Self) -> Int
+pub fn TraceSpread::not_equal(Self, Self) -> Bool
 pub fn TraceSpread::p90(Self) -> Double
+pub fn TraceSpread::to_repr(Self) -> @debug.Repr
 pub fn TraceSpread::variance(Self) -> Double
 
 pub struct TraceSummary {
@@ -311,19 +347,24 @@ pub struct TraceSummary {
   final_mu : Double
 } derive(Eq, @debug.Debug)
 pub fn TraceSummary::count(Self) -> Int
+pub fn TraceSummary::equal(Self, Self) -> Bool
 pub fn TraceSummary::final_mu(Self) -> Double
 pub fn TraceSummary::mean_absolute_error(Self) -> Double
 pub fn TraceSummary::mean_kept(Self) -> Double
 pub fn TraceSummary::mean_surprise(Self) -> Double
+pub fn TraceSummary::not_equal(Self, Self) -> Bool
+pub fn TraceSummary::to_repr(Self) -> @debug.Repr
 
 pub enum Version {
   V1
   V2
 } derive(Eq, @debug.Debug)
+pub fn Version::equal(Self, Self) -> Bool
+pub fn Version::not_equal(Self, Self) -> Bool
+pub fn Version::to_repr(Self) -> @debug.Repr
 pub fn Version::v1() -> Self
 pub fn Version::v2() -> Self
 
 // Type aliases
 
 // Traits
-

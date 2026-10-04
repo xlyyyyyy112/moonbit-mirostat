@@ -74,5 +74,5 @@ pub fn compare_scenario(
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  Ok({ v1, v2 })
+  Ok({ v1, v2, })
 }

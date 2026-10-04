@@ -14,7 +14,7 @@ pub fn SamplerState::new(
   if !finite(mu) || steps < 0 {
     return Err(InvalidParameter("state needs finite mu and non-negative steps"))
   }
-  Ok({ mu, steps })
+  Ok({ mu, steps, })
 }
 
 ///|
@@ -29,7 +29,7 @@ pub fn SamplerState::steps(self : SamplerState) -> Int {
 
 ///|
 pub fn Sampler::state(self : Sampler) -> SamplerState {
-  { mu: self.mu, steps: self.steps }
+  { mu: self.mu, steps: self.steps, }
 }
 
 ///|
@@ -38,5 +38,5 @@ pub fn Sampler::from_state(
   version : Version,
   state : SamplerState,
 ) -> Sampler {
-  { config, version, mu: state.mu, steps: state.steps }
+  { config, version, mu: state.mu, steps: state.steps, }
 }
