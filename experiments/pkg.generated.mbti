@@ -1,0 +1,111 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xlyyyyyy112/moonbit-mirostat/experiments"
+
+import {
+  "moonbitlang/core/debug",
+  "xlyyyyyy112/moonbit-mirostat",
+}
+
+// Values
+pub fn baseline_mean_surprise(Array[BaselineStep]) -> Result[Double, @moonbit-mirostat.SamplingError]
+
+pub fn calibrated_targets(Array[SweepPoint], Double) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
+
+pub fn compare_scenario(@moonbit-mirostat.Config, Scenario, Int, Int, Int) -> Result[Comparison, @moonbit-mirostat.SamplingError]
+
+pub fn comparison_csv(Comparison, Double) -> String
+
+pub fn distinct_token_rate(Array[Int]) -> Result[Double, @moonbit-mirostat.SamplingError]
+
+pub fn repeated_ngram_rate(Array[Int], Int) -> Result[Double, @moonbit-mirostat.SamplingError]
+
+pub fn run_alternating(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int, Double, Double, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+
+pub fn run_baseline_scenario(Baseline, @moonbit-mirostat.ParkMiller, Scenario, Int, Int) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
+
+pub fn run_baseline_static(Baseline, @moonbit-mirostat.ParkMiller, Array[Double], Int) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
+
+pub fn run_scenario(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Scenario, Int, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+
+pub fn run_static(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int, Double, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+
+pub fn scenario_logits(Scenario, Int, Int, Int) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
+
+pub fn segment_mean_errors(Array[@moonbit-mirostat.Step], Double, Int) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
+
+pub fn segment_summaries(Array[@moonbit-mirostat.Step], Double, Int) -> Result[Array[@moonbit-mirostat.TraceSummary], @moonbit-mirostat.SamplingError]
+
+pub fn sweep_csv(Array[SweepPoint]) -> String
+
+pub fn sweep_targets(Array[Double], Double, Scenario, Int, Int, Int) -> Result[Array[SweepPoint], @moonbit-mirostat.SamplingError]
+
+pub fn target_hit_rate(Array[@moonbit-mirostat.Step], Double, Double) -> Result[Double, @moonbit-mirostat.SamplingError]
+
+pub fn trace_tokens(Array[@moonbit-mirostat.Step]) -> Array[Int]
+
+pub fn zipf_logits(Int, Double) -> Array[Double]
+
+// Errors
+
+// Types and methods
+pub enum Baseline {
+  TopK(Int)
+  TopP(Double)
+  Temperature(Double)
+  MinP(Double)
+  Epsilon(Double)
+  Typical(Double)
+} derive(Eq, @debug.Debug)
+pub fn Baseline::epsilon(Double) -> Self
+pub fn Baseline::min_p(Double) -> Self
+pub fn Baseline::sample(Self, Array[Double], Double) -> Result[Int, @moonbit-mirostat.SamplingError]
+pub fn Baseline::temperature(Double) -> Self
+pub fn Baseline::top_k(Int) -> Self
+pub fn Baseline::top_p(Double) -> Self
+pub fn Baseline::typical(Double) -> Self
+
+pub struct BaselineStep {
+  token : Int
+  original_probability : Double
+  observed_surprise : Double
+} derive(Eq, @debug.Debug)
+pub fn BaselineStep::observed_surprise(Self) -> Double
+pub fn BaselineStep::original_probability(Self) -> Double
+pub fn BaselineStep::token(Self) -> Int
+
+pub struct Comparison {
+  v1 : @moonbit-mirostat.TraceSummary
+  v2 : @moonbit-mirostat.TraceSummary
+} derive(Eq, @debug.Debug)
+pub fn Comparison::mean_surprise_gap(Self) -> Double
+pub fn Comparison::v1(Self) -> @moonbit-mirostat.TraceSummary
+pub fn Comparison::v2(Self) -> @moonbit-mirostat.TraceSummary
+
+pub enum Scenario {
+  StaticZipf(Double)
+  AlternatingZipf(Double, Double)
+  DriftingZipf(Double, Double)
+  Uniform
+  Bimodal
+  SpikeAndTail
+} derive(Eq, @debug.Debug)
+pub fn Scenario::alternating_zipf(Double, Double) -> Self
+pub fn Scenario::bimodal() -> Self
+pub fn Scenario::drifting_zipf(Double, Double) -> Self
+pub fn Scenario::spike_and_tail() -> Self
+pub fn Scenario::static_zipf(Double) -> Self
+pub fn Scenario::uniform() -> Self
+
+pub struct SweepPoint {
+  target : Double
+  comparison : Comparison
+} derive(Eq, @debug.Debug)
+pub fn SweepPoint::comparison(Self) -> Comparison
+pub fn SweepPoint::target(Self) -> Double
+pub fn SweepPoint::v1_error(Self) -> Double
+pub fn SweepPoint::v2_error(Self) -> Double
+
+// Type aliases
+
+// Traits
+
