@@ -169,6 +169,8 @@ def main() -> None:
         with torch.inference_mode():
             output = model.generate(
                 input_ids=input_ids,
+                attention_mask=torch.ones_like(input_ids),
+                pad_token_id=tokenizer.eos_token_id,
                 max_new_tokens=args.max_new_tokens,
                 do_sample=True,
                 temperature=args.temperature if sampler is None else 1.0,
@@ -197,7 +199,7 @@ def main() -> None:
     )
     download_record = args.model / "download.json"
     revision = (
-        json.loads(download_record.read_text(encoding="utf-8")).get("revision")
+        json.loads(download_record.read_text(encoding="utf-8-sig")).get("revision")
         if download_record.exists()
         else None
     )
