@@ -110,6 +110,62 @@ one next-token row together with prior `state_mu` and `state_steps`,
 is the one-shot counterpart for a backend that returns non-negative weights.
 These helpers do not perform model inference or file/network I/O.
 
+## Real model integration (CPU)
+
+`scripts/run_hf_mirostat.py` connects a Hugging Face causal language model to
+the MoonBit sampler. Transformers computes each next-token logit row; a
+persistent Node process calls the compiled MoonBit `jsonio.session_json`, and
+the selected token is fed back into the model. The host uses one generation
+session and one random stream per request. Batch decoding is not implemented
+in this integration yet.
+
+On Windows, install the isolated Python integration environment and pin a
+public model revision outside the repository (the default paths use E:). This
+setup reuses a CPU PyTorch installation from system Python; the machine running
+the example must already have `torch` available before creating the
+`--system-site-packages` environment:
+
+```powershell
+py -3.12 -m venv --system-site-packages E:\moonbit-mirostat-venv
+E:\moonbit-mirostat-venv\Scripts\python.exe -m pip install -r scripts\requirements-hf.txt
+$env:HF_HOME = 'E:\moonbit-mirostat\hf-cache'
+E:\moonbit-mirostat-venv\Scripts\python.exe scripts\download_hf_model.py
+moon build --target js --release
+```
+
+Generate a short sample with Mirostat V2, or use `--version v1`:
+
+```powershell
+E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
+  --prompt 'Explain why stable sorting is useful.' --version v2 `
+  --max-new-tokens 48 --seed 7 --report E:\moonbit-mirostat\runs\v2.json
+```
+
+The same runner supports a top-p reference, for example:
+
+```powershell
+E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
+  --prompt 'Explain why stable sorting is useful.' --sampler top-p `
+  --temperature 0.8 --top-p 0.9 --max-new-tokens 48 --seed 7 `
+  --report E:\moonbit-mirostat\runs\top-p.json
+```
+
+The baseline temperature and `--top-p` are recorded in the JSON report. Compare runs with
+the same model revision, prompt, seed, thread count, and token limit. The
+report records generated text, token IDs, per-step surprise and candidate
+count, total tokens per second, and time spent in the MoonBit bridge. The
+bridge currently sends the full float32 logit row as JSON each step, so its
+cost is measured separately; this is an experimental integration rather than
+a low-latency production adapter. The runner accepts batch size one and finite
+logits only. It does not claim that target surprise always equals the observed
+mean or that Mirostat improves text quality.
+
+The default model is [Qwen/Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct),
+using revision `7ae557604adf67be50417f59c2c2f167def9a775`; the downloader
+records that commit beside the model. The model card declares Apache-2.0.
+Model weights are not included in this repository. CPU decoding can be slow,
+but does not require a CUDA GPU or a paid inference API.
+
 ## Validation scope
 
 The test suite covers stable softmax, masked logits, normalization, candidate

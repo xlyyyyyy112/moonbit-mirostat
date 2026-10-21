@@ -1,0 +1,9 @@
+import {
+  "xlyyyyyy112/moonbit-mirostat/jsonio",
+}
+
+pkgtype(kind: "foreign_library")
+
+options(
+  link: { "js": { "format": "cjs" } },
+)

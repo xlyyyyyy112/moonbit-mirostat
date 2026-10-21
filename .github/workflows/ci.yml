@@ -37,6 +37,8 @@ jobs:
           moon version --all
           moon check --target all --deny-warn
           moon build --target all --deny-warn
+          moon build --target js --release --deny-warn
+          node scripts/test_hf_bridge.cjs
           moon test --target all --deny-warn
           moon fmt
           git diff --exit-code
