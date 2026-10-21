@@ -1,31 +1,18 @@
 # moonbit-mirostat
 
-A model-independent MoonBit implementation of Mirostat adaptive sampling. A caller
-passes one logit row and one uniform random draw per generated token. The library
-returns the chosen token, its probability and surprise under the original model
-distribution, the retained candidate count, and the updated feedback state.
+一个与模型无关的 MoonBit Mirostat 自适应采样实现。调用方每生成一个 token，传入一行 logits 和一个 `[0, 1)` 均匀随机数。库返回选中的 token、它在原始模型分布下的概率与惊讶度、保留的候选数量，以及更新后的反馈状态。
 
-The package implements both algorithms in the [Mirostat paper](https://arxiv.org/abs/2007.14966):
-V1 estimates a Zipf exponent and chooses an adaptive top-k; V2 retains tokens
-whose model surprise is at most the current `mu`. The feedback rule is
-`mu := mu - eta * (observed_surprise - tau)`. `tau`, `mu`, and surprise use bits.
+本包实现了 [Mirostat 论文](https://arxiv.org/abs/2007.14966)中的两个算法：V1 估计 Zipf 指数并自适应选择 top-k；V2 保留模型惊讶度不超过当前 `mu` 的 token。反馈规则为 `mu := mu - eta * (observed_surprise - tau)`。`tau`、`mu` 和惊讶度均以 bit 为单位。
 
-## When to use it
+## 适用场景
 
-- A MoonBit text-generation loop can control the observed surprise of generated
-  tokens without fixing a top-k or top-p threshold for every step.
-- A WebAssembly application can run sampling locally after a model inference
-  backend supplies logits, without routing token selection through JavaScript.
-- A decoding experiment can replay identical logits and uniform draws through
-  V1 and V2, then compare their retained vocabulary and surprise traces.
+- MoonBit 文本生成循环可以控制生成 token 的惊讶度，而不必为每一步固定 top-k 或 top-p 阈值。
+- WebAssembly 应用可以在模型推理后于本地完成采样，不必通过 JavaScript 执行 token 选择。
+- 解码实验可以将相同的 logits 和随机数依次交给 V1、V2，比较保留词表和惊讶度轨迹。
 
-This package does not run a language model, tokenize text, fetch weights, or own
-an RNG. The caller chooses how to obtain logits and randomness. It does not
-claim exact behavioral equivalence to a particular model runtime: runtimes may
-apply penalties, grammar masks, temperature, or other transformations before
-Mirostat, and those transformations change the input distribution.
+本包不运行语言模型、不进行分词、不下载模型权重，也不管理随机数生成器。logits 和随机数由调用方提供。本包不承诺与某个模型运行时完全等价：运行时可能会在 Mirostat 前应用重复惩罚、语法掩码、温度等变换，这些变换会改变输入分布。
 
-## Build and run
+## 构建与运行
 
 ```sh
 moon check --deny-warn
@@ -40,18 +27,14 @@ moon run cmd/sweep
 moon run cmd/json
 ```
 
-`cmd/main` prints five reproducible decisions for each variant.
-`cmd/experiment` runs both variants for 1000 draws from the same static Zipf
-distribution and seed, then prints CSV summary metrics. This is a deterministic
-algorithm fixture, not a language-model quality benchmark.
-`cmd/generate` demonstrates a context-dependent callback and an end token
-using a tiny deterministic model fixture.
-`cmd/batch`, `cmd/weights`, and `cmd/process` demonstrate atomic batching,
-weight inputs, and explicit logit preprocessing. `cmd/sweep` evaluates a set
-of surprise targets on the same controlled fixture. `cmd/json` prints the JSON
-wire formats for a WebAssembly host.
+- `cmd/main`：为每个算法版本打印五次可复现的采样结果。
+- `cmd/experiment`：用相同的静态 Zipf 分布和随机种子运行两个版本各 1000 次，并输出 CSV 汇总指标。这是确定性的算法测试样例，不是语言模型质量测试。
+- `cmd/generate`：用小型确定性模型样例演示上下文回调和结束 token。
+- `cmd/batch`、`cmd/weights`、`cmd/process`：分别演示原子批处理、权重输入和显式 logits 预处理。
+- `cmd/sweep`：在同一受控样例上评估多个目标惊讶度。
+- `cmd/json`：打印供 WebAssembly 宿主使用的 JSON 数据格式。
 
-A typical integration creates one sampler per generation session:
+典型接入方式是为每个生成会话创建一个 sampler：
 
 ```moonbit nocheck
 let config = @mirostat.Config::new(3.0, eta=0.1).unwrap()
@@ -60,78 +43,29 @@ let step = sampler.sample([4.0, 2.0, 1.0], 0.42).unwrap()
 println(step.token())
 ```
 
-The uniform draw must be finite and in `[0, 1)`. A model row must contain at
-least one finite logit. Negative infinity masks a token; NaN and positive
-infinity are errors. Token indices are zero based and preserve the incoming
-logit order. Equal probabilities rank by smaller token index, so a fixed input
-and draw produce a repeatable result. `reset()` restores initial `mu` and the
-step count. `replay()` accepts aligned arrays of rows and draws, and
-`summarize()` reports mean surprise, retained count, and absolute error against
-the target.
+传入的随机数必须是有限值且位于 `[0, 1)`。模型 logits 至少要有一个有限值。负无穷表示屏蔽该 token；NaN 和正无穷会报错。token 索引从零开始，并保持输入 logits 的顺序。概率相同时，较小的 token 索引排在前面，因此固定输入和随机数会得到可复现的结果。`reset()` 会恢复初始 `mu` 和步数。`replay()` 接收对齐的 logits 行与随机数数组，`summarize()` 汇总平均惊讶度、候选数量和相对目标值的绝对误差。
 
-If the model backend produces non-negative weights, use `sample_weights()`;
-the package normalizes them. `preview()` and `preview_weights()` show the
-candidate count, retained model mass, and expected surprise without drawing or
-changing state. `ParkMiller` supplies a reproducible portable RNG for examples;
-`sample_with_rng()` consumes it automatically. Production hosts can continue to
-pass uniform draws from their own RNG.
+若模型后端提供非负权重，可调用 `sample_weights()`，本包会对权重归一化。`preview()` 和 `preview_weights()` 可在不抽样、不改变状态的情况下查看候选数量、保留的模型概率质量和期望惊讶度。`ParkMiller` 为示例提供可移植且可复现的随机数生成器；`sample_with_rng()` 会自动从中取随机数。生产环境也可以继续传入宿主自己的随机数。
 
-`checkpoint()` and `restore()` support a generation branch that may need to
-roll back; `fork()` creates a separate session with the same feedback state.
-`replay_atomic()` restores state if a later row in a batch fails, while
-`replay()` retains earlier successful steps. Neither function owns the caller's
-random source.
+`checkpoint()` 和 `restore()` 可用于需要回滚的生成分支；`fork()` 会以相同反馈状态创建独立会话。`replay_atomic()` 在批次中的某一行失败时恢复状态，`replay()` 则保留此前成功的步骤。这两个函数都不管理调用方的随机数来源。
 
-`generate()` drives a context-dependent model callback with generated token
-history and an optional end token. For a fixed distribution used repeatedly in
-an experiment, `PreparedRow` caches its softmax and full ranking, and
-`sample_prepared()` reuses them. `TraceAccumulator` computes online summary
-metrics without retaining the whole trace.
+`generate()` 使用生成的 token 历史和可选结束 token 驱动上下文相关的模型回调。若实验中反复使用固定分布，`PreparedRow` 会缓存 softmax 和完整排序，`sample_prepared()` 可重复使用缓存。`TraceAccumulator` 在线计算汇总指标，无需保留整条轨迹。
 
-For a model server that decodes several requests in one inference batch,
-`sample_batch()` accepts aligned sampler, logit-row, and uniform arrays.
-`sample_batch_atomic()` restores every sampler if any row fails. Each array
-entry should refer to a distinct generation session.
+模型服务在一个推理批次中解码多个请求时，可以调用 `sample_batch()`，传入对齐的 sampler、logits 行和随机数数组。`sample_batch_atomic()` 会在任一行失败时恢复所有 sampler。每个数组位置应对应不同的生成会话。
 
-## Host integration
+## 接入宿主运行时
 
-For a host that makes the categorical draw itself, call `candidates()` to get
-the token ids, original probabilities, and normalized candidate probabilities.
-After selecting one of those token ids, call `observe_token()` to validate it
-against the current Mirostat candidate set and update feedback. This is useful
-when a model runtime already owns its random generator or implements a fused
-sampling kernel.
+如果宿主负责执行类别抽样，可调用 `candidates()` 获取 token ID、原始概率和归一化后的候选概率。选定 token 后，再调用 `observe_token()` 验证该 token 是否属于当前 Mirostat 候选集，并更新反馈状态。适用于模型运行时已经管理随机数生成器或实现融合采样内核的情况。
 
-The `jsonio` package provides a compact JSON protocol over the same public
-library. `init_json` creates the initial portable state, `session_json` takes
-one next-token row together with prior `state_mu` and `state_steps`,
-`batch_json` processes multiple independent sessions atomically, and
-`preview_json` inspects a candidate set without consuming a draw. `weight_json`
-is the one-shot counterpart for a backend that returns non-negative weights.
-These helpers do not perform model inference or file/network I/O.
+`jsonio` 包基于同一套公开 API 提供精简 JSON 协议：`init_json` 创建初始可移植状态；`session_json` 根据下一步 logits 行及之前的 `state_mu`、`state_steps` 处理一个采样步骤；`batch_json` 原子处理多个独立会话；`preview_json` 查看候选集但不消耗随机数；`weight_json` 为返回非负权重的后端提供一次性采样接口。这些函数不执行模型推理，也不访问文件或网络。
 
-## Real model integration (CPU)
+## 真实模型接入（CPU）
 
-`scripts/run_hf_mirostat.py` connects a Hugging Face causal language model to
-the MoonBit sampler. Transformers computes each next-token logit row; a
-persistent Node process calls the compiled MoonBit `jsonio.session_json`, and
-the selected token is fed back into the model. The host uses one generation
-session and one random stream per request. Batch decoding is not implemented
-in this integration yet.
+`scripts/run_hf_mirostat.py` 将 Hugging Face 因果语言模型接入 MoonBit sampler。Transformers 计算每一步的 logits；一个常驻 Node 进程调用编译为 JavaScript 的 MoonBit `jsonio.session_json`；生成器再将选出的 token 传回模型。每个请求使用一个生成会话和一条随机数流。目前此接入示例尚未实现批量解码。
 
-The checked integration uses the public `sshleifer/tiny-gpt2` fixture at pinned
-revision `5f91d94bd9cd7190a9f3216ff93cd1dd95f2c7be`. Transformers exposes its
-next-token scores through `LogitsProcessor`; the adapter sends those scores to
-the persistent Node/MoonBit bridge and returns the selected token to generation.
-This proves that the sampler can run inside a real Hugging Face generation loop.
-The tiny fixture is intentionally limited and does not support claims about
-useful text quality or larger-model performance.
+已验证的模型是公开的 `sshleifer/tiny-gpt2`，固定版本为 `5f91d94bd9cd7190a9f3216ff93cd1dd95f2c7be`。Transformers 通过 `LogitsProcessor` 暴露下一 token 的分数，适配器将分数发送给常驻的 Node/MoonBit 桥接进程，再将选出的 token 返回生成流程。这验证了 sampler 可以接入真实的 Hugging Face 生成循环。该微型模型能力有限，不能据此声称生成文本质量良好或大型模型性能优越。
 
-On Windows, install the isolated Python integration environment and download
-the pinned fixture outside the repository (the default paths use E:). This
-setup reuses a CPU PyTorch installation from system Python; the machine running
-the example must already have `torch` available before creating the
-`--system-site-packages` environment:
+在 Windows 上，可在仓库之外创建独立 Python 环境并下载固定版本的模型（默认路径使用 E 盘）。此配置会复用系统 Python 中的 CPU 版 PyTorch；创建带 `--system-site-packages` 的虚拟环境前，运行机器的系统 Python 中必须已安装 `torch`：
 
 ```powershell
 py -3.12 -m venv --system-site-packages E:\moonbit-mirostat-venv
@@ -141,7 +75,7 @@ E:\moonbit-mirostat-venv\Scripts\python.exe scripts\download_hf_model.py
 moon build --target js --release
 ```
 
-Generate a short sample with Mirostat V2, or use `--version v1`:
+使用 Mirostat V2 生成短文本；也可以将 `--version v2` 改为 `--version v1`：
 
 ```powershell
 E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
@@ -149,7 +83,7 @@ E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
   --max-new-tokens 48 --seed 7 --report E:\moonbit-mirostat\runs\v2.json
 ```
 
-The same runner supports a top-p reference, for example:
+同一运行脚本也支持 top-p 基线，例如：
 
 ```powershell
 E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
@@ -158,76 +92,26 @@ E:\moonbit-mirostat-venv\Scripts\python.exe scripts\run_hf_mirostat.py `
   --report E:\moonbit-mirostat\runs\top-p.json
 ```
 
-The baseline temperature and `--top-p` are recorded in the JSON report. Compare runs with
-the same model revision, prompt, seed, thread count, and token limit. The
-report records generated text, token IDs, per-step surprise and candidate
-count, total tokens per second, and time spent in the MoonBit bridge. The
-bridge currently sends the full float32 logit row as JSON each step, so its
-cost is measured separately; this is an experimental integration rather than
-a low-latency production adapter. The runner accepts batch size one and finite
-logits only. It does not claim that target surprise always equals the observed
-mean or that Mirostat improves text quality.
+JSON 报告会记录基线温度和 `--top-p`。比较实验时，应使用相同的模型版本、提示词、随机种子、线程数和 token 上限。报告包含生成文本、token ID、逐步惊讶度和候选数量、每秒生成 token 数，以及 MoonBit 桥接耗时。桥接目前每一步都通过 JSON 发送完整的 float32 logits 行，因此会单独测量这部分开销；这是实验性接入方式，并非低延迟生产适配器。运行器目前仅支持 batch size 为 1，并要求 logits 为有限值。本项目不声称目标惊讶度总能等于观测均值，也不声称 Mirostat 一定提升文本质量。
 
-The downloader records the model ID and exact revision beside the downloaded
-weights. The fixture weights are not included in this repository. CPU decoding
-does not require a CUDA GPU or a paid inference API. The validation record in
-`docs/model-integration-validation.md` lists measured throughput and bridge
-cost, along with the limitations of this fixture.
+模型下载脚本会在已下载权重旁记录模型 ID 和精确版本；仓库不包含模型权重。CPU 解码不需要 CUDA GPU 或付费推理 API。实际吞吐量和桥接开销见中文验证记录 [docs/model-integration-validation.md](docs/model-integration-validation.md)，其中也列出了该测试样例的局限。
 
-For this integration, report generated tokens per second and MoonBit bridge
-milliseconds per token. Compare medians from at least three runs with the same
-model revision, prompt, seed, thread count, and token limit; report the two
-measurements separately because the JSON bridge is not inference time. The
-functional acceptance check is that each run produces the requested number of
-in-range token IDs and, for Mirostat, a trace entry per generated token. There
-is no hardware-independent speed threshold, and this fixture is not a text
-quality acceptance test.
+针对这一接入示例，请分别报告每秒生成 token 数和 MoonBit 桥接的每 token 毫秒数。至少运行三次并比较中位数，每次使用相同的模型版本、提示词、随机种子、线程数和 token 上限。由于 JSON 桥接耗时不等于模型推理耗时，两项指标应分别报告。功能验收条件是每次运行都生成指定数量且 ID 在有效范围内的 token；Mirostat 运行还应为每个生成 token 记录一条轨迹。项目不设与硬件无关的速度门槛，也不把该微型模型作为文本质量测试。
 
-To benchmark the JS bridge and sampler without model inference, build the JS
-target and run `node scripts/bench_sampling_bridge.cjs`. This uses a fixed
-50,257-token row and reports repeated per-call medians; the validation record
-documents the V2 optimization result and its limits.
+若要排除模型推理开销，单独测试 JS 桥接和 sampler，可先构建 JS 目标，再运行 `node scripts/bench_sampling_bridge.cjs`。测试使用固定的 50,257 个 token 的 logits 行，并报告多轮调用的中位耗时；V2 优化结果和测试限制记录在中文验证文档中。
 
-## Validation scope
+## 验证范围
 
-The test suite covers stable softmax, masked logits, normalization, candidate
-selection, V1 and V2 feedback, state rollback, batch atomicity, JSON decoding,
-fixed-seed replay, synthetic Zipf drift, and WebAssembly-compatible execution.
-The synthetic experiments verify that the feedback loop approaches feasible
-target surprise levels for their fixtures. They do not establish text quality,
-model quality, or performance for a particular vocabulary size.
+测试覆盖稳定 softmax、屏蔽 logits、归一化、候选选择、V1 和 V2 反馈、状态回滚、批处理原子性、JSON 解码、固定种子回放、合成 Zipf 分布漂移，以及 WebAssembly 兼容执行。合成实验用于验证反馈循环在相应测试分布下能否接近可行的目标惊讶度，不代表文本质量、模型质量或特定词表规模下的性能结论。
 
-## Numerical and state behavior
+## 数值与状态行为
 
-Softmax subtracts the largest logit before exponentiation. The Zipf slope
-estimator uses adjacent ranked probabilities up to `m`; a flat or underflowed
-distribution uses a small positive limiting slope. V1 clamps estimated `k` to
-the vocabulary. V2 always retains the most probable token, even if its
-surprise exceeds `mu`. The selected token's surprise is measured against the
-original softmax, before truncation and renormalization. An invalid row or draw
-returns an error without changing sampler state. In a replay, earlier valid
-rows remain committed if a later row fails.
+Softmax 会先减去最大 logit 再执行指数运算。Zipf 斜率估计器使用前 `m` 个排序概率之间的相邻值；对于平坦分布或下溢分布，会使用较小的正数作为斜率下限。V1 会将估算出的 `k` 限制在词表范围内。V2 至少保留概率最高的 token，即使它的惊讶度超过 `mu`。所选 token 的惊讶度以截断和重新归一化之前的原始 softmax 概率计算。无效 logits 行或随机数会返回错误，且不改变 sampler 状态。在 replay 中，如果后续行失败，之前成功处理的行仍会保留。
 
-V1 uses a bounded heap to inspect the highest `m` probabilities and then
-select its adaptive top-k candidates. V2 scans the vocabulary and sorts only
-the tokens below its surprise cutoff. Both methods still inspect every logit
-at each step. Large-vocabulary low-latency decoders should benchmark the
-package with their model and target settings before adoption.
+V1 使用有界堆检查概率最高的 `m` 个 token，再选择自适应 top-k 候选。V2 扫描整个词表，并仅对低于惊讶度阈值的 token 排序。两种算法每一步仍需检查每个 logit。对于大词表、低延迟解码场景，应使用目标模型和参数对本包进行基准测试。
 
-For controlled comparisons, `sample_top_k`, `sample_top_p`, and
-`sample_temperature` use the same stable probability and draw routines.
-Additional comparison samplers cover min-p, epsilon, and locally typical
-sampling. A caller may apply `mask_logits`, `bias_logits`, or
-`penalize_repetition` before Mirostat; these transformations are explicit so
-the reported surprise is based on the transformed model row.
-`entropy`, `prefix_mass`, `expected_prefix_surprise`, and `perplexity` provide
-small diagnostics for comparing distributions with an observed trace.
+为便于受控比较，`sample_top_k`、`sample_top_p` 和 `sample_temperature` 使用相同的稳定概率计算和抽样函数。其他对比采样器还包括 min-p、epsilon 和 locally typical sampling。调用方可以在 Mirostat 前应用 `mask_logits`、`bias_logits` 或 `penalize_repetition`；这些变换是显式执行的，因此报告的惊讶度对应变换后的模型分布。`entropy`、`prefix_mass`、`expected_prefix_surprise` 和 `perplexity` 可用于比较分布及观测轨迹。
 
-## Origin and license
+## 来源与许可证
 
-This is an original MoonBit implementation of the algorithms and equations in
-Sourya Basu et al., *Mirostat: A Neural Text Decoding Algorithm That Directly
-Controls Perplexity*, ICLR 2021. The [authors' Python research code](https://github.com/basusourya/mirostat)
-was used as a reference for terminology and algorithm scope; this repository
-does not copy its source files. The upstream code is MIT licensed. This
-MoonBit package is licensed under Apache-2.0; see [LICENSE](LICENSE).
+这是依据 Sourya Basu 等人的论文 *Mirostat: A Neural Text Decoding Algorithm That Directly Controls Perplexity*（ICLR 2021）独立实现的 MoonBit 项目。作者的 [Python 研究代码](https://github.com/basusourya/mirostat)用于参考术语和算法范围；本仓库未复制其源文件。上游代码采用 MIT 许可证。本 MoonBit 项目采用 Apache-2.0 许可证，详见 [LICENSE](LICENSE)。
