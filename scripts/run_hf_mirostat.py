@@ -20,7 +20,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, LogitsProcessor
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MODEL = Path(r"E:\moonbit-mirostat\models\Qwen2.5-0.5B-Instruct")
+DEFAULT_MODEL = Path(r"E:\moonbit-mirostat\models\tiny-gpt2")
 BRIDGE = ROOT / "integrations" / "hf_mirostat" / "bridge.cjs"
 
 

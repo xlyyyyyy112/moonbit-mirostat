@@ -7,9 +7,9 @@ from pathlib import Path
 from huggingface_hub import HfApi, snapshot_download
 
 
-MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
-MODEL_REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
-DEFAULT_DESTINATION = Path(r"E:\moonbit-mirostat\models\Qwen2.5-0.5B-Instruct")
+MODEL_ID = "sshleifer/tiny-gpt2"
+MODEL_REVISION = "5f91d94bd9cd7190a9f3216ff93cd1dd95f2c7be"
+DEFAULT_DESTINATION = Path(r"E:\moonbit-mirostat\models\tiny-gpt2")
 
 
 def main() -> None:

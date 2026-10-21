@@ -130,3 +130,45 @@ test "optimized candidate selection matches reference prefix sizes" {
     )
   }
 }
+
+///|
+test "V2 public candidates stay probability-ranked and sampling is stable" {
+  let logits = [@math.ln(0.2), @math.ln(0.5), @math.ln(0.3)]
+  let config = Config::new(10.0, initial_mu=20.0).unwrap()
+  let candidates = Sampler::new(config, version=Version::v2())
+    .candidates(logits)
+    .unwrap()
+  assert_eq(candidates.tokens(), [1, 2, 0])
+  let low = Sampler::new(config, version=Version::v2())
+    .sample(logits, 0.19)
+    .unwrap()
+  let middle = Sampler::new(config, version=Version::v2())
+    .sample(logits, 0.21)
+    .unwrap()
+  let high = Sampler::new(config, version=Version::v2())
+    .sample(logits, 0.71)
+    .unwrap()
+  assert_eq(low.token(), 0)
+  assert_eq(middle.token(), 1)
+  assert_eq(high.token(), 2)
+  assert_eq(low.kept_tokens(), 3)
+}
+
+///|
+test "V2 probability cutoff matches the ranked surprise reference" {
+  let logits = [3.1, 2.7, 1.8, 0.9, 0.1, -0.4, -1.3, -2.0]
+  let p = probabilities(logits).unwrap()
+  let order = rank(p).unwrap()
+  for mu in [0.0, 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 8.0, 16.0] {
+    let config = Config::new(1.0, initial_mu=mu).unwrap()
+    let candidates = Sampler::new(config, version=Version::v2())
+      .candidates(logits)
+      .unwrap()
+      .tokens()
+    let keep = v2_prefix_size(p, order, mu).unwrap()
+    assert_eq(candidates.length(), keep)
+    for index in 0..<keep {
+      assert_eq(candidates[index], order[index])
+    }
+  }
+}

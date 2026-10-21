@@ -166,11 +166,11 @@ fn Sampler::sample_distribution(
   p : Array[Double],
   uniform : Double,
 ) -> Result[Step, SamplingError] {
-  let order = match self.select_candidates(p) {
+  let order = match self.select_for_sampling(p) {
     Ok(value) => value
     Err(e) => return Err(e)
   }
-  let token = match draw_candidates(p, order, uniform) {
+  let token = match draw_selected_candidates(p, order, uniform) {
     Ok(value) => value
     Err(e) => return Err(e)
   }
@@ -234,32 +234,57 @@ fn Sampler::select_candidates(
         }
         top_indices(p, k)
       }
-    V2 => {
-      let candidates : Array[Int] = []
-      for token in 0..<p.length() {
-        if p[token] > 0.0 {
-          let information = match surprise(p[token]) {
-            Ok(value) => value
-            Err(error) => return Err(error)
-          }
-          if information <= self.mu {
-            candidates.push(token)
-          }
-        }
-      }
-      if candidates.length() == 0 {
-        return top_indices(p, 1)
-      }
-      candidates.sort_by(fn(left, right) {
-        if better_token(left, right, p) {
-          -1
-        } else if better_token(right, left, p) {
-          1
-        } else {
-          0
-        }
-      })
-      Ok(candidates)
+    V2 => v2_candidates(p, self.mu, true)
+  }
+}
+
+///|
+/// Categorical draws need a candidate set, not a ranked presentation order.
+/// Keeping V2 candidates in token-id order avoids sorting a large vocabulary
+/// for every generated token. Public inspection remains probability-ranked.
+fn Sampler::select_for_sampling(
+  self : Sampler,
+  p : Array[Double],
+) -> Result[Array[Int], SamplingError] {
+  match self.version {
+    V1 => self.select_candidates(p)
+    V2 => v2_candidates(p, self.mu, false)
+  }
+}
+
+///|
+fn v2_candidates(
+  p : Array[Double],
+  mu : Double,
+  ranked : Bool,
+) -> Result[Array[Int], SamplingError] {
+  if !finite(mu) || p.length() == 0 {
+    return Err(InvalidParameter("invalid V2 candidate inputs"))
+  }
+  let cutoff = @math.exp(-mu * @math.ln(2.0))
+  let candidates : Array[Int] = []
+  for token in 0..<p.length() {
+    let probability = p[token]
+    if !finite(probability) || probability < 0.0 || probability > 1.0 {
+      return Err(InvalidProbability(token))
+    }
+    if probability > 0.0 && probability >= cutoff {
+      candidates.push(token)
     }
   }
+  if candidates.length() == 0 {
+    return top_indices(p, 1)
+  }
+  if ranked {
+    candidates.sort_by(fn(left, right) {
+      if better_token(left, right, p) {
+        -1
+      } else if better_token(right, left, p) {
+        1
+      } else {
+        0
+      }
+    })
+  }
+  Ok(candidates)
 }

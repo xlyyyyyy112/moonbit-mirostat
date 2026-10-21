@@ -64,19 +64,30 @@ pub fn Sampler::sample_prepared(
   row : PreparedRow,
   uniform : Double,
 ) -> Result[Step, SamplingError] {
-  let keep = match self.prepared_keep(row) {
-    Ok(value) => value
-    Err(error) => return Err(error)
-  }
-  if !finite(uniform) || uniform < 0.0 || uniform >= 1.0 {
-    return Err(InvalidUniform)
+  let candidates = match self.version {
+    V1 => {
+      let keep = match self.prepared_keep(row) {
+        Ok(value) => value
+        Err(error) => return Err(error)
+      }
+      let prefix : Array[Int] = []
+      for index in 0..<keep {
+        prefix.push(row.order[index])
+      }
+      prefix
+    }
+    V2 =>
+      match v2_candidates(row.probabilities, self.mu, false) {
+        Ok(value) => value
+        Err(error) => return Err(error)
+      }
   }
   let token = match
-    draw_valid_prefix(row.probabilities, row.order, keep, uniform) {
+    draw_selected_candidates(row.probabilities, candidates, uniform) {
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  self.commit_step(row.probabilities, token, keep)
+  self.commit_step(row.probabilities, token, candidates.length())
 }
 
 ///|

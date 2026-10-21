@@ -119,8 +119,16 @@ the selected token is fed back into the model. The host uses one generation
 session and one random stream per request. Batch decoding is not implemented
 in this integration yet.
 
-On Windows, install the isolated Python integration environment and pin a
-public model revision outside the repository (the default paths use E:). This
+The checked integration uses the public `sshleifer/tiny-gpt2` fixture at pinned
+revision `5f91d94bd9cd7190a9f3216ff93cd1dd95f2c7be`. Transformers exposes its
+next-token scores through `LogitsProcessor`; the adapter sends those scores to
+the persistent Node/MoonBit bridge and returns the selected token to generation.
+This proves that the sampler can run inside a real Hugging Face generation loop.
+The tiny fixture is intentionally limited and does not support claims about
+useful text quality or larger-model performance.
+
+On Windows, install the isolated Python integration environment and download
+the pinned fixture outside the repository (the default paths use E:). This
 setup reuses a CPU PyTorch installation from system Python; the machine running
 the example must already have `torch` available before creating the
 `--system-site-packages` environment:
@@ -160,11 +168,25 @@ a low-latency production adapter. The runner accepts batch size one and finite
 logits only. It does not claim that target surprise always equals the observed
 mean or that Mirostat improves text quality.
 
-The default model is [Qwen/Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct),
-using revision `7ae557604adf67be50417f59c2c2f167def9a775`; the downloader
-records that commit beside the model. The model card declares Apache-2.0.
-Model weights are not included in this repository. CPU decoding can be slow,
-but does not require a CUDA GPU or a paid inference API.
+The downloader records the model ID and exact revision beside the downloaded
+weights. The fixture weights are not included in this repository. CPU decoding
+does not require a CUDA GPU or a paid inference API. The validation record in
+`docs/model-integration-validation.md` lists measured throughput and bridge
+cost, along with the limitations of this fixture.
+
+For this integration, report generated tokens per second and MoonBit bridge
+milliseconds per token. Compare medians from at least three runs with the same
+model revision, prompt, seed, thread count, and token limit; report the two
+measurements separately because the JSON bridge is not inference time. The
+functional acceptance check is that each run produces the requested number of
+in-range token IDs and, for Mirostat, a trace entry per generated token. There
+is no hardware-independent speed threshold, and this fixture is not a text
+quality acceptance test.
+
+To benchmark the JS bridge and sampler without model inference, build the JS
+target and run `node scripts/bench_sampling_bridge.cjs`. This uses a fixed
+50,257-token row and reports repeated per-call medians; the validation record
+documents the V2 optimization result and its limits.
 
 ## Validation scope
 

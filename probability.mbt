@@ -219,6 +219,20 @@ pub fn draw_candidates(
 }
 
 ///|
+/// Internal selected indices are unique and in range by construction. Keep
+/// the full defensive scan in the public `draw_candidates` entry point.
+fn draw_selected_candidates(
+  probabilities : Array[Double],
+  candidates : Array[Int],
+  uniform : Double,
+) -> Result[Int, SamplingError] {
+  if !finite(uniform) || uniform < 0.0 || uniform >= 1.0 {
+    return Err(InvalidUniform)
+  }
+  draw_valid_prefix(probabilities, candidates, candidates.length(), uniform)
+}
+
+///|
 fn draw_valid_prefix(
   probabilities : Array[Double],
   order : Array[Int],
