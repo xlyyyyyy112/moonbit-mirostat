@@ -1,2 +1,5 @@
 # Local registration material is not part of the reusable library.
 /项目申报书.md
+__pycache__/
+*.pyc
+*.pyo
