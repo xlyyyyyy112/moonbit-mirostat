@@ -20,7 +20,7 @@
 在已有 MoonBit 项目中安装已发布的库：
 
 ```sh
-moon add xlyyyyyy112/moonbit-mirostat@0.1.1
+moon add xlyyyyyy112/moonbit-mirostat@0.1.2
 ```
 
 在使用它的包的 `moon.pkg` 中加入：
