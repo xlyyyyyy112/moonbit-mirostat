@@ -12,20 +12,20 @@ pub struct SamplingRequest {
 
 ///|
 pub struct SamplingResponse {
-  token : Int
-  kept_tokens : Int
+  token : Int32
+  kept_tokens : Int32
   probability : Double
   surprise_bits : Double
   mu_after : Double
 } derive(FromJson, ToJson, Debug)
 
 ///|
-pub fn SamplingResponse::token(self : SamplingResponse) -> Int {
+pub fn SamplingResponse::token(self : SamplingResponse) -> Int32 {
   self.token
 }
 
 ///|
-pub fn SamplingResponse::kept_tokens(self : SamplingResponse) -> Int {
+pub fn SamplingResponse::kept_tokens(self : SamplingResponse) -> Int32 {
   self.kept_tokens
 }
 
@@ -186,14 +186,14 @@ pub struct SessionRequest {
   uniform : Double
   version : String
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(FromJson, ToJson, Debug)
 
 ///|
 pub struct SessionResponse {
   step : SamplingResponse
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(FromJson, ToJson, Debug)
 
 ///|
@@ -207,7 +207,7 @@ pub fn SessionResponse::state_mu(self : SessionResponse) -> Double {
 }
 
 ///|
-pub fn SessionResponse::state_steps(self : SessionResponse) -> Int {
+pub fn SessionResponse::state_steps(self : SessionResponse) -> Int32 {
   self.state_steps
 }
 
@@ -322,20 +322,20 @@ pub struct PreviewRequest {
   eta : Double
   version : String
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(FromJson, ToJson, Debug)
 
 ///|
 pub struct PreviewResponse {
-  vocabulary : Int
-  kept_tokens : Int
+  vocabulary : Int32
+  kept_tokens : Int32
   retained_mass : Double
   expected_surprise : Double
   state_mu : Double
 } derive(FromJson, ToJson, Debug)
 
 ///|
-pub fn PreviewResponse::kept_tokens(self : PreviewResponse) -> Int {
+pub fn PreviewResponse::kept_tokens(self : PreviewResponse) -> Int32 {
   self.kept_tokens
 }
 
@@ -436,7 +436,7 @@ pub struct InitRequest {
 ///|
 pub struct InitResponse {
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(FromJson, ToJson, Debug)
 
 ///|
@@ -445,7 +445,7 @@ pub fn InitResponse::state_mu(self : InitResponse) -> Double {
 }
 
 ///|
-pub fn InitResponse::state_steps(self : InitResponse) -> Int {
+pub fn InitResponse::state_steps(self : InitResponse) -> Int32 {
   self.state_steps
 }
 

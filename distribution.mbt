@@ -27,8 +27,8 @@ pub fn entropy(probabilities : Array[Double]) -> Result[Double, SamplingError] {
 /// Original model mass covered by a ranked candidate prefix.
 pub fn prefix_mass(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
 ) -> Result[Double, SamplingError] {
   match check_order(probabilities, order) {
     Ok(_) => ()
@@ -52,8 +52,8 @@ pub fn prefix_mass(
 /// surprise itself is measured against the full original model distribution.
 pub fn expected_prefix_surprise(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
 ) -> Result[Double, SamplingError] {
   let mass = match prefix_mass(probabilities, order, keep) {
     Ok(value) => value
@@ -87,8 +87,8 @@ pub fn perplexity(average_surprise : Double) -> Result[Double, SamplingError] {
 /// expected model surprise because the latter uses original probabilities.
 pub fn prefix_entropy(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
 ) -> Result[Double, SamplingError] {
   let mass = match prefix_mass(probabilities, order, keep) {
     Ok(value) => value
@@ -106,8 +106,8 @@ pub fn prefix_entropy(
 /// exposes how widely token-level surprises may fluctuate around their mean.
 pub fn prefix_surprise_variance(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
 ) -> Result[Double, SamplingError] {
   let mass = match prefix_mass(probabilities, order, keep) {
     Ok(value) => value
@@ -138,8 +138,8 @@ pub fn prefix_surprise_variance(
 /// mass and is zero when the entire support is kept.
 pub fn prefix_kl(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
 ) -> Result[Double, SamplingError] {
   let mass = match prefix_mass(probabilities, order, keep) {
     Ok(value) => value

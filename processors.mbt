@@ -28,7 +28,7 @@ pub fn mask_logits(
 /// mask in the caller. Repeated ids have the same effect as one occurrence.
 pub fn block_token_ids(
   logits : Array[Double],
-  blocked : Array[Int],
+  blocked : Array[Int32],
 ) -> Result[Array[Double], SamplingError] {
   let allowed = Array::make(logits.length(), true)
   for token in blocked {
@@ -45,7 +45,7 @@ pub fn block_token_ids(
 /// remain after applying the allowlist and any masks already in the logits.
 pub fn allow_token_ids(
   logits : Array[Double],
-  allowed_tokens : Array[Int],
+  allowed_tokens : Array[Int32],
 ) -> Result[Array[Double], SamplingError] {
   let allowed = Array::make(logits.length(), false)
   for token in allowed_tokens {
@@ -91,7 +91,7 @@ pub fn bias_logits(
 /// of the Mirostat algorithm itself.
 pub fn penalize_repetition(
   logits : Array[Double],
-  history : Array[Int],
+  history : Array[Int32],
   penalty : Double,
 ) -> Result[Array[Double], SamplingError] {
   if !finite(penalty) || penalty < 1.0 {
@@ -128,7 +128,7 @@ pub fn penalize_repetition(
 /// repetition. This is a preprocessing option outside Mirostat feedback.
 pub fn penalize_counts(
   logits : Array[Double],
-  history : Array[Int],
+  history : Array[Int32],
   presence : Double,
   frequency : Double,
 ) -> Result[Array[Double], SamplingError] {

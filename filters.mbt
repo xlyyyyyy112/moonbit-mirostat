@@ -3,9 +3,9 @@
 /// of the best token's probability. The best token is always kept.
 pub fn min_p_prefix_size(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
   min_p : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(min_p) || min_p < 0.0 || min_p > 1.0 {
     return Err(InvalidParameter("min-p must be in [0, 1]"))
   }
@@ -30,7 +30,7 @@ pub fn sample_min_p(
   logits : Array[Double],
   min_p : Double,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
     Err(error) => return Err(error)
@@ -51,9 +51,9 @@ pub fn sample_min_p(
 /// absolute epsilon threshold. At least the best token survives.
 pub fn epsilon_prefix_size(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
   epsilon : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(epsilon) || epsilon < 0.0 || epsilon > 1.0 {
     return Err(InvalidParameter("epsilon must be in [0, 1]"))
   }
@@ -76,7 +76,7 @@ pub fn sample_epsilon(
   logits : Array[Double],
   epsilon : Double,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
     Err(error) => return Err(error)

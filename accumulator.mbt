@@ -3,7 +3,7 @@
 /// step. Push only successful Mirostat decisions into this accumulator.
 pub struct TraceAccumulator {
   target : Double
-  mut count : Int
+  mut count : Int32
   mut total_surprise : Double
   mut total_kept : Double
   mut absolute_error : Double
@@ -28,7 +28,7 @@ pub fn TraceAccumulator::new(
 }
 
 ///|
-pub fn TraceAccumulator::count(self : TraceAccumulator) -> Int {
+pub fn TraceAccumulator::count(self : TraceAccumulator) -> Int32 {
   self.count
 }
 

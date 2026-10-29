@@ -71,9 +71,9 @@ fn validate_scenario(
 ///|
 pub fn scenario_logits(
   scenario : Scenario,
-  vocabulary : Int,
-  index : Int,
-  total_steps : Int,
+  vocabulary : Int32,
+  index : Int32,
+  total_steps : Int32,
 ) -> Result[Array[Double], @mirostat.SamplingError] {
   if vocabulary < 1 || index < 0 || total_steps < 1 || index >= total_steps {
     return Err(
@@ -116,8 +116,8 @@ pub fn run_scenario(
   sampler : @mirostat.Sampler,
   rng : @mirostat.ParkMiller,
   scenario : Scenario,
-  vocabulary : Int,
-  steps : Int,
+  vocabulary : Int32,
+  steps : Int32,
 ) -> Result[Array[@mirostat.Step], @mirostat.SamplingError] {
   if steps < 0 || vocabulary < 1 {
     return Err(

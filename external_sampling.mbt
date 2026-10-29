@@ -6,7 +6,7 @@
 pub fn Sampler::observe_token(
   self : Sampler,
   logits : Array[Double],
-  token : Int,
+  token : Int32,
 ) -> Result[Step, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
@@ -19,7 +19,7 @@ pub fn Sampler::observe_token(
 pub fn Sampler::observe_weighted_token(
   self : Sampler,
   weights : Array[Double],
-  token : Int,
+  token : Int32,
 ) -> Result[Step, SamplingError] {
   let p = match normalize_weights(weights) {
     Ok(value) => value
@@ -32,7 +32,7 @@ pub fn Sampler::observe_weighted_token(
 fn Sampler::observe_distribution(
   self : Sampler,
   p : Array[Double],
-  token : Int,
+  token : Int32,
 ) -> Result[Step, SamplingError] {
   let candidates = match self.select_candidates(p) {
     Ok(value) => value
@@ -46,13 +46,13 @@ fn Sampler::observe_distribution(
 pub fn Sampler::observe_prepared_token(
   self : Sampler,
   row : PreparedRow,
-  token : Int,
+  token : Int32,
 ) -> Result[Step, SamplingError] {
   let keep = match self.prepared_keep(row) {
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  let candidates : Array[Int] = []
+  let candidates : Array[Int32] = []
   for index in 0..<keep {
     candidates.push(row.order[index])
   }
@@ -63,8 +63,8 @@ pub fn Sampler::observe_prepared_token(
 fn Sampler::observe_candidates(
   self : Sampler,
   p : Array[Double],
-  candidates : Array[Int],
-  token : Int,
+  candidates : Array[Int32],
+  token : Int32,
 ) -> Result[Step, SamplingError] {
   if token < 0 || token >= p.length() {
     return Err(InvalidParameter("observed token outside vocabulary"))

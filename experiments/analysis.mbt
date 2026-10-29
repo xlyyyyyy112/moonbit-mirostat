@@ -5,7 +5,7 @@
 pub fn segment_summaries(
   trace : Array[@mirostat.Step],
   target : Double,
-  segment_size : Int,
+  segment_size : Int32,
 ) -> Result[Array[@mirostat.TraceSummary], @mirostat.SamplingError] {
   if segment_size < 1 {
     return Err(
@@ -70,7 +70,7 @@ pub fn target_hit_rate(
 pub fn segment_mean_errors(
   trace : Array[@mirostat.Step],
   target : Double,
-  segment_size : Int,
+  segment_size : Int32,
 ) -> Result[Array[Double], @mirostat.SamplingError] {
   let summaries = match segment_summaries(trace, target, segment_size) {
     Ok(value) => value

@@ -3,9 +3,9 @@
 pub enum SamplingError {
   EmptyLogits
   AllMasked
-  NonFiniteLogit(Int)
+  NonFiniteLogit(Int32)
   InvalidUniform
-  InvalidProbability(Int)
+  InvalidProbability(Int32)
   InvalidParameter(String)
   NumericalFailure
 } derive(Eq, Debug)
@@ -120,11 +120,13 @@ pub fn normalize_weights(
 
 ///|
 /// Sort token ids by descending probability; ties favor the lower id.
-pub fn rank(probabilities : Array[Double]) -> Result[Array[Int], SamplingError] {
+pub fn rank(
+  probabilities : Array[Double],
+) -> Result[Array[Int32], SamplingError] {
   if probabilities.length() == 0 {
     return Err(EmptyLogits)
   }
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   for i in 0..<probabilities.length() {
     let p = probabilities[i]
     if !finite(p) || p < 0.0 {
@@ -147,7 +149,7 @@ pub fn rank(probabilities : Array[Double]) -> Result[Array[Int], SamplingError] 
 ///|
 fn check_order(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
 ) -> Result[Unit, SamplingError] {
   if probabilities.length() == 0 || probabilities.length() != order.length() {
     return Err(InvalidParameter("order must cover the vocabulary"))
@@ -170,10 +172,10 @@ fn check_order(
 /// The caller controls randomness, making a run exactly replayable.
 pub fn draw_prefix(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(uniform) || uniform < 0.0 || uniform >= 1.0 {
     return Err(InvalidUniform)
   }
@@ -194,9 +196,9 @@ pub fn draw_prefix(
 /// accepts a partial vocabulary and retains the supplied candidate order.
 pub fn draw_candidates(
   probabilities : Array[Double],
-  candidates : Array[Int],
+  candidates : Array[Int32],
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(uniform) || uniform < 0.0 || uniform >= 1.0 {
     return Err(InvalidUniform)
   }
@@ -223,9 +225,9 @@ pub fn draw_candidates(
 /// the full defensive scan in the public `draw_candidates` entry point.
 fn draw_selected_candidates(
   probabilities : Array[Double],
-  candidates : Array[Int],
+  candidates : Array[Int32],
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(uniform) || uniform < 0.0 || uniform >= 1.0 {
     return Err(InvalidUniform)
   }
@@ -235,10 +237,10 @@ fn draw_selected_candidates(
 ///|
 fn draw_valid_prefix(
   probabilities : Array[Double],
-  order : Array[Int],
-  keep : Int,
+  order : Array[Int32],
+  keep : Int32,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let mut total = 0.0
   for i in 0..<keep {
     total = total + probabilities[order[i]]

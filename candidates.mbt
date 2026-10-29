@@ -3,14 +3,14 @@
 /// sampler. Arrays align by index: `tokens[i]` has `conditional[i]` probability
 /// after truncation and `original[i]` probability before truncation.
 pub struct CandidateSet {
-  tokens : Array[Int]
+  tokens : Array[Int32]
   conditional : Array[Double]
   original : Array[Double]
   mu : Double
 } derive(Debug)
 
 ///|
-pub fn CandidateSet::tokens(self : CandidateSet) -> Array[Int] {
+pub fn CandidateSet::tokens(self : CandidateSet) -> Array[Int32] {
   self.tokens.copy()
 }
 
@@ -32,7 +32,7 @@ pub fn CandidateSet::mu(self : CandidateSet) -> Double {
 ///|
 /// Return the candidate-list position for a vocabulary token. This position
 /// indexes the arrays returned by `conditional()` and `original()`.
-pub fn CandidateSet::position(self : CandidateSet, token : Int) -> Int? {
+pub fn CandidateSet::position(self : CandidateSet, token : Int32) -> Int32? {
   for index in 0..<self.tokens.length() {
     if self.tokens[index] == token {
       return Some(index)
@@ -46,7 +46,7 @@ pub fn CandidateSet::position(self : CandidateSet, token : Int) -> Int? {
 /// is not in the current candidate set.
 pub fn CandidateSet::conditional_probability(
   self : CandidateSet,
-  token : Int,
+  token : Int32,
 ) -> Double? {
   match self.position(token) {
     Some(index) => Some(self.conditional[index])
@@ -59,7 +59,7 @@ pub fn CandidateSet::conditional_probability(
 /// is not in the current candidate set.
 pub fn CandidateSet::original_probability(
   self : CandidateSet,
-  token : Int,
+  token : Int32,
 ) -> Double? {
   match self.position(token) {
     Some(index) => Some(self.original[index])

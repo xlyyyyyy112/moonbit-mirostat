@@ -3,13 +3,13 @@
 /// between calls. The configuration and version must be stored separately.
 pub struct SamplerState {
   mu : Double
-  steps : Int
+  steps : Int32
 } derive(Eq, Debug)
 
 ///|
 pub fn SamplerState::new(
   mu : Double,
-  steps : Int,
+  steps : Int32,
 ) -> Result[SamplerState, SamplingError] {
   if !finite(mu) || steps < 0 {
     return Err(InvalidParameter("state needs finite mu and non-negative steps"))
@@ -23,7 +23,7 @@ pub fn SamplerState::mu(self : SamplerState) -> Double {
 }
 
 ///|
-pub fn SamplerState::steps(self : SamplerState) -> Int {
+pub fn SamplerState::steps(self : SamplerState) -> Int32 {
   self.steps
 }
 

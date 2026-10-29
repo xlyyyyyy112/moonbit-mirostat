@@ -3,12 +3,12 @@
 /// Zero-probability tokens are placed last, with token id breaking ties.
 pub fn typical_order(
   probabilities : Array[Double],
-) -> Result[Array[Int], SamplingError] {
+) -> Result[Array[Int32], SamplingError] {
   let center = match entropy(probabilities) {
     Ok(value) => value
     Err(error) => return Err(error)
   }
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   let deviations : Array[Double] = []
   for i in 0..<probabilities.length() {
     order.push(i)
@@ -38,9 +38,9 @@ pub fn typical_order(
 /// threshold. Unlike top-p, the candidate order need not follow probability.
 pub fn typical_prefix_size(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
   threshold : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(threshold) || threshold <= 0.0 || threshold > 1.0 {
     return Err(InvalidParameter("typical threshold must be in (0, 1]"))
   }
@@ -63,7 +63,7 @@ pub fn sample_typical(
   logits : Array[Double],
   threshold : Double,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
     Err(error) => return Err(error)

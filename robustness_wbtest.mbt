@@ -50,7 +50,7 @@ test "top-p retained set grows monotonically with threshold" {
 test "reset reproduces a run with identical random stream" {
   let sampler = Sampler::new(Config::new(2.5).unwrap())
   let first_rng = ParkMiller::new(17).unwrap()
-  let first : Array[Int] = []
+  let first : Array[Int32] = []
   for _ in 0..<20 {
     first.push(
       sampler.sample_with_rng([3.0, 2.0, 1.0], first_rng).unwrap().token(),
@@ -58,7 +58,7 @@ test "reset reproduces a run with identical random stream" {
   }
   sampler.reset()
   let second_rng = ParkMiller::new(17).unwrap()
-  let second : Array[Int] = []
+  let second : Array[Int32] = []
   for _ in 0..<20 {
     second.push(
       sampler.sample_with_rng([3.0, 2.0, 1.0], second_rng).unwrap().token(),

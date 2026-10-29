@@ -11,45 +11,45 @@ pub fn baseline_mean_surprise(Array[BaselineStep]) -> Result[Double, @moonbit-mi
 
 pub fn calibrated_targets(Array[SweepPoint], Double) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
 
-pub fn compare_scenario(@moonbit-mirostat.Config, Scenario, Int, Int, Int) -> Result[Comparison, @moonbit-mirostat.SamplingError]
+pub fn compare_scenario(@moonbit-mirostat.Config, Scenario, Int32, Int32, Int32) -> Result[Comparison, @moonbit-mirostat.SamplingError]
 
 pub fn comparison_csv(Comparison, Double) -> String
 
-pub fn distinct_token_rate(Array[Int]) -> Result[Double, @moonbit-mirostat.SamplingError]
+pub fn distinct_token_rate(Array[Int32]) -> Result[Double, @moonbit-mirostat.SamplingError]
 
-pub fn repeated_ngram_rate(Array[Int], Int) -> Result[Double, @moonbit-mirostat.SamplingError]
+pub fn repeated_ngram_rate(Array[Int32], Int32) -> Result[Double, @moonbit-mirostat.SamplingError]
 
-pub fn run_alternating(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int, Double, Double, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+pub fn run_alternating(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int32, Double, Double, Int32) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
 
-pub fn run_baseline_scenario(Baseline, @moonbit-mirostat.ParkMiller, Scenario, Int, Int) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
+pub fn run_baseline_scenario(Baseline, @moonbit-mirostat.ParkMiller, Scenario, Int32, Int32) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
 
-pub fn run_baseline_static(Baseline, @moonbit-mirostat.ParkMiller, Array[Double], Int) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
+pub fn run_baseline_static(Baseline, @moonbit-mirostat.ParkMiller, Array[Double], Int32) -> Result[Array[BaselineStep], @moonbit-mirostat.SamplingError]
 
-pub fn run_scenario(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Scenario, Int, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+pub fn run_scenario(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Scenario, Int32, Int32) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
 
-pub fn run_static(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int, Double, Int) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
+pub fn run_static(@moonbit-mirostat.Sampler, @moonbit-mirostat.ParkMiller, Int32, Double, Int32) -> Result[Array[@moonbit-mirostat.Step], @moonbit-mirostat.SamplingError]
 
-pub fn scenario_logits(Scenario, Int, Int, Int) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
+pub fn scenario_logits(Scenario, Int32, Int32, Int32) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
 
-pub fn segment_mean_errors(Array[@moonbit-mirostat.Step], Double, Int) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
+pub fn segment_mean_errors(Array[@moonbit-mirostat.Step], Double, Int32) -> Result[Array[Double], @moonbit-mirostat.SamplingError]
 
-pub fn segment_summaries(Array[@moonbit-mirostat.Step], Double, Int) -> Result[Array[@moonbit-mirostat.TraceSummary], @moonbit-mirostat.SamplingError]
+pub fn segment_summaries(Array[@moonbit-mirostat.Step], Double, Int32) -> Result[Array[@moonbit-mirostat.TraceSummary], @moonbit-mirostat.SamplingError]
 
 pub fn sweep_csv(Array[SweepPoint]) -> String
 
-pub fn sweep_targets(Array[Double], Double, Scenario, Int, Int, Int) -> Result[Array[SweepPoint], @moonbit-mirostat.SamplingError]
+pub fn sweep_targets(Array[Double], Double, Scenario, Int32, Int32, Int32) -> Result[Array[SweepPoint], @moonbit-mirostat.SamplingError]
 
 pub fn target_hit_rate(Array[@moonbit-mirostat.Step], Double, Double) -> Result[Double, @moonbit-mirostat.SamplingError]
 
-pub fn trace_tokens(Array[@moonbit-mirostat.Step]) -> Array[Int]
+pub fn trace_tokens(Array[@moonbit-mirostat.Step]) -> Array[Int32]
 
-pub fn zipf_logits(Int, Double) -> Array[Double]
+pub fn zipf_logits(Int32, Double) -> Array[Double]
 
 // Errors
 
 // Types and methods
 pub enum Baseline {
-  TopK(Int)
+  TopK(Int32)
   TopP(Double)
   Temperature(Double)
   MinP(Double)
@@ -60,15 +60,15 @@ pub fn Baseline::epsilon(Double) -> Self
 pub fn Baseline::equal(Self, Self) -> Bool
 pub fn Baseline::min_p(Double) -> Self
 pub fn Baseline::not_equal(Self, Self) -> Bool
-pub fn Baseline::sample(Self, Array[Double], Double) -> Result[Int, @moonbit-mirostat.SamplingError]
+pub fn Baseline::sample(Self, Array[Double], Double) -> Result[Int32, @moonbit-mirostat.SamplingError]
 pub fn Baseline::temperature(Double) -> Self
 pub fn Baseline::to_repr(Self) -> @debug.Repr
-pub fn Baseline::top_k(Int) -> Self
+pub fn Baseline::top_k(Int32) -> Self
 pub fn Baseline::top_p(Double) -> Self
 pub fn Baseline::typical(Double) -> Self
 
 pub struct BaselineStep {
-  token : Int
+  token : Int32
   original_probability : Double
   observed_surprise : Double
 } derive(Eq, @debug.Debug)
@@ -77,7 +77,7 @@ pub fn BaselineStep::not_equal(Self, Self) -> Bool
 pub fn BaselineStep::observed_surprise(Self) -> Double
 pub fn BaselineStep::original_probability(Self) -> Double
 pub fn BaselineStep::to_repr(Self) -> @debug.Repr
-pub fn BaselineStep::token(Self) -> Int
+pub fn BaselineStep::token(Self) -> Int32
 
 pub struct Comparison {
   v1 : @moonbit-mirostat.TraceSummary

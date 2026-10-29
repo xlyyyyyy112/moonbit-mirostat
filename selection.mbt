@@ -3,15 +3,15 @@
 /// A size-k heap avoids sorting the full vocabulary when k is small.
 pub fn top_indices(
   probabilities : Array[Double],
-  k : Int,
-) -> Result[Array[Int], SamplingError] {
+  k : Int32,
+) -> Result[Array[Int32], SamplingError] {
   if probabilities.length() == 0 {
     return Err(EmptyLogits)
   }
   if k < 1 || k > probabilities.length() {
     return Err(InvalidParameter("k must be between one and vocabulary size"))
   }
-  let heap : Array[Int] = []
+  let heap : Array[Int32] = []
   for token in 0..<probabilities.length() {
     let p = probabilities[token]
     if !finite(p) || p < 0.0 {
@@ -38,17 +38,17 @@ pub fn top_indices(
 }
 
 ///|
-fn better_token(left : Int, right : Int, p : Array[Double]) -> Bool {
+fn better_token(left : Int32, right : Int32, p : Array[Double]) -> Bool {
   p[left] > p[right] || (p[left] == p[right] && left < right)
 }
 
 ///|
-fn worse_token(left : Int, right : Int, p : Array[Double]) -> Bool {
+fn worse_token(left : Int32, right : Int32, p : Array[Double]) -> Bool {
   better_token(right, left, p)
 }
 
 ///|
-fn sift_up(heap : Array[Int], p : Array[Double], index : Int) -> Unit {
+fn sift_up(heap : Array[Int32], p : Array[Double], index : Int32) -> Unit {
   let mut child = index
   while child > 0 {
     let parent = (child - 1) / 2
@@ -63,7 +63,7 @@ fn sift_up(heap : Array[Int], p : Array[Double], index : Int) -> Unit {
 }
 
 ///|
-fn sift_down(heap : Array[Int], p : Array[Double], index : Int) -> Unit {
+fn sift_down(heap : Array[Int32], p : Array[Double], index : Int32) -> Unit {
   let mut parent = index
   while true {
     let left = parent * 2 + 1

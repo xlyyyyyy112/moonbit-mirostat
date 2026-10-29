@@ -1,6 +1,6 @@
 ///|
 /// A deterministic model row with exact Zipf-shaped probabilities.
-pub fn zipf_logits(vocabulary : Int, exponent : Double) -> Array[Double] {
+pub fn zipf_logits(vocabulary : Int32, exponent : Double) -> Array[Double] {
   let row : Array[Double] = []
   if vocabulary <= 0 || exponent <= 0.0 {
     return row
@@ -17,9 +17,9 @@ pub fn zipf_logits(vocabulary : Int, exponent : Double) -> Array[Double] {
 pub fn run_static(
   sampler : @mirostat.Sampler,
   rng : @mirostat.ParkMiller,
-  vocabulary : Int,
+  vocabulary : Int32,
   exponent : Double,
-  steps : Int,
+  steps : Int32,
 ) -> Result[Array[@mirostat.Step], @mirostat.SamplingError] {
   if steps < 0 || vocabulary <= 0 || exponent <= 0.0 {
     return Err(
@@ -47,10 +47,10 @@ pub fn run_static(
 pub fn run_alternating(
   sampler : @mirostat.Sampler,
   rng : @mirostat.ParkMiller,
-  vocabulary : Int,
+  vocabulary : Int32,
   peaked_exponent : Double,
   flat_exponent : Double,
-  steps : Int,
+  steps : Int32,
 ) -> Result[Array[@mirostat.Step], @mirostat.SamplingError] {
   if steps < 0 ||
     vocabulary <= 0 ||

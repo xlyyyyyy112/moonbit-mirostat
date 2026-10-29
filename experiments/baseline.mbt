@@ -1,7 +1,7 @@
 ///|
 /// Fixed sampling policies for experiments against adaptive Mirostat.
 pub enum Baseline {
-  TopK(Int)
+  TopK(Int32)
   TopP(Double)
   Temperature(Double)
   MinP(Double)
@@ -10,7 +10,7 @@ pub enum Baseline {
 } derive(Eq, Debug)
 
 ///|
-pub fn Baseline::top_k(k : Int) -> Baseline {
+pub fn Baseline::top_k(k : Int32) -> Baseline {
   TopK(k)
 }
 
@@ -41,13 +41,13 @@ pub fn Baseline::typical(p : Double) -> Baseline {
 
 ///|
 pub struct BaselineStep {
-  token : Int
+  token : Int32
   original_probability : Double
   observed_surprise : Double
 } derive(Eq, Debug)
 
 ///|
-pub fn BaselineStep::token(self : BaselineStep) -> Int {
+pub fn BaselineStep::token(self : BaselineStep) -> Int32 {
   self.token
 }
 
@@ -66,7 +66,7 @@ pub fn Baseline::sample(
   self : Baseline,
   logits : Array[Double],
   uniform : Double,
-) -> Result[Int, @mirostat.SamplingError] {
+) -> Result[Int32, @mirostat.SamplingError] {
   match self {
     TopK(k) => @mirostat.sample_top_k(logits, k, uniform)
     TopP(p) => @mirostat.sample_top_p(logits, p, uniform)
@@ -84,7 +84,7 @@ pub fn run_baseline_static(
   policy : Baseline,
   rng : @mirostat.ParkMiller,
   logits : Array[Double],
-  steps : Int,
+  steps : Int32,
 ) -> Result[Array[BaselineStep], @mirostat.SamplingError] {
   if steps < 0 {
     return Err(
@@ -137,8 +137,8 @@ pub fn run_baseline_scenario(
   policy : Baseline,
   rng : @mirostat.ParkMiller,
   scenario : Scenario,
-  vocabulary : Int,
-  steps : Int,
+  vocabulary : Int32,
+  steps : Int32,
 ) -> Result[Array[BaselineStep], @mirostat.SamplingError] {
   if vocabulary < 1 || steps < 0 {
     return Err(

@@ -3,8 +3,8 @@
 /// sequence. This measures one property discussed in the Mirostat paper, but
 /// it cannot by itself judge meaning or text quality.
 pub fn repeated_ngram_rate(
-  tokens : Array[Int],
-  n : Int,
+  tokens : Array[Int32],
+  n : Int32,
 ) -> Result[Double, @mirostat.SamplingError] {
   if n < 1 || n > tokens.length() {
     return Err(
@@ -31,7 +31,12 @@ pub fn repeated_ngram_rate(
 }
 
 ///|
-fn same_window(tokens : Array[Int], left : Int, right : Int, n : Int) -> Bool {
+fn same_window(
+  tokens : Array[Int32],
+  left : Int32,
+  right : Int32,
+  n : Int32,
+) -> Bool {
   for offset in 0..<n {
     if tokens[left + offset] != tokens[right + offset] {
       return false
@@ -44,7 +49,7 @@ fn same_window(tokens : Array[Int], left : Int, right : Int, n : Int) -> Bool {
 /// Fraction of unique token ids in a generated sequence. This statistic is
 /// descriptive only; a high value does not guarantee coherent text.
 pub fn distinct_token_rate(
-  tokens : Array[Int],
+  tokens : Array[Int32],
 ) -> Result[Double, @mirostat.SamplingError] {
   if tokens.length() == 0 {
     return Err(
@@ -68,8 +73,8 @@ pub fn distinct_token_rate(
 }
 
 ///|
-pub fn trace_tokens(trace : Array[@mirostat.Step]) -> Array[Int] {
-  let tokens : Array[Int] = []
+pub fn trace_tokens(trace : Array[@mirostat.Step]) -> Array[Int32] {
+  let tokens : Array[Int32] = []
   for step in trace {
     tokens.push(step.token())
   }

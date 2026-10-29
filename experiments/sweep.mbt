@@ -43,9 +43,9 @@ pub fn sweep_targets(
   targets : Array[Double],
   eta : Double,
   scenario : Scenario,
-  vocabulary : Int,
-  steps : Int,
-  seed : Int,
+  vocabulary : Int32,
+  steps : Int32,
+  seed : Int32,
 ) -> Result[Array[SweepPoint], @mirostat.SamplingError] {
   if targets.length() == 0 {
     return Err(

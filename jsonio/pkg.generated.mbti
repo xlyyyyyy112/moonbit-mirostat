@@ -64,11 +64,11 @@ pub fn InitRequest::to_repr(Self) -> @debug.Repr
 
 pub struct InitResponse {
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn InitResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn InitResponse::state_mu(Self) -> Double
-pub fn InitResponse::state_steps(Self) -> Int
+pub fn InitResponse::state_steps(Self) -> Int32
 pub fn InitResponse::to_json(Self) -> Json
 pub fn InitResponse::to_repr(Self) -> @debug.Repr
 
@@ -78,21 +78,21 @@ pub struct PreviewRequest {
   eta : Double
   version : String
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn PreviewRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn PreviewRequest::to_json(Self) -> Json
 pub fn PreviewRequest::to_repr(Self) -> @debug.Repr
 
 pub struct PreviewResponse {
-  vocabulary : Int
-  kept_tokens : Int
+  vocabulary : Int32
+  kept_tokens : Int32
   retained_mass : Double
   expected_surprise : Double
   state_mu : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn PreviewResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
-pub fn PreviewResponse::kept_tokens(Self) -> Int
+pub fn PreviewResponse::kept_tokens(Self) -> Int32
 pub fn PreviewResponse::retained_mass(Self) -> Double
 pub fn PreviewResponse::to_json(Self) -> Json
 pub fn PreviewResponse::to_repr(Self) -> @debug.Repr
@@ -132,19 +132,19 @@ pub fn SamplingRequest::to_json(Self) -> Json
 pub fn SamplingRequest::to_repr(Self) -> @debug.Repr
 
 pub struct SamplingResponse {
-  token : Int
-  kept_tokens : Int
+  token : Int32
+  kept_tokens : Int32
   probability : Double
   surprise_bits : Double
   mu_after : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn SamplingResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
-pub fn SamplingResponse::kept_tokens(Self) -> Int
+pub fn SamplingResponse::kept_tokens(Self) -> Int32
 pub fn SamplingResponse::mu_after(Self) -> Double
 pub fn SamplingResponse::surprise_bits(Self) -> Double
 pub fn SamplingResponse::to_json(Self) -> Json
 pub fn SamplingResponse::to_repr(Self) -> @debug.Repr
-pub fn SamplingResponse::token(Self) -> Int
+pub fn SamplingResponse::token(Self) -> Int32
 
 pub struct SessionRequest {
   logits : Array[Double]
@@ -153,7 +153,7 @@ pub struct SessionRequest {
   uniform : Double
   version : String
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn SessionRequest::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SessionRequest::to_json(Self) -> Json
@@ -162,11 +162,11 @@ pub fn SessionRequest::to_repr(Self) -> @debug.Repr
 pub struct SessionResponse {
   step : SamplingResponse
   state_mu : Double
-  state_steps : Int
+  state_steps : Int32
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn SessionResponse::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SessionResponse::state_mu(Self) -> Double
-pub fn SessionResponse::state_steps(Self) -> Int
+pub fn SessionResponse::state_steps(Self) -> Int32
 pub fn SessionResponse::step(Self) -> SamplingResponse
 pub fn SessionResponse::to_json(Self) -> Json
 pub fn SessionResponse::to_repr(Self) -> @debug.Repr

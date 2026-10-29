@@ -22,13 +22,13 @@ pub fn StopReason::observer() -> StopReason {
 
 ///|
 pub struct Generation {
-  tokens : Array[Int]
+  tokens : Array[Int32]
   steps : Array[Step]
   reason : StopReason
 } derive(Eq, Debug)
 
 ///|
-pub fn Generation::tokens(self : Generation) -> Array[Int] {
+pub fn Generation::tokens(self : Generation) -> Array[Int32] {
   self.tokens.copy()
 }
 
@@ -50,9 +50,9 @@ pub fn Generation::reason(self : Generation) -> StopReason {
 pub fn generate(
   sampler : Sampler,
   rng : ParkMiller,
-  model : (Array[Int]) -> Result[Array[Double], SamplingError],
-  limit : Int,
-  end_token : Int?,
+  model : (Array[Int32]) -> Result[Array[Double], SamplingError],
+  limit : Int32,
+  end_token : Int32?,
 ) -> Result[Generation, SamplingError] {
   generate_from_prompt(sampler, rng, model, [], limit, end_token)
 }
@@ -63,10 +63,10 @@ pub fn generate(
 pub fn generate_from_prompt(
   sampler : Sampler,
   rng : ParkMiller,
-  model : (Array[Int]) -> Result[Array[Double], SamplingError],
-  prompt : Array[Int],
-  limit : Int,
-  end_token : Int?,
+  model : (Array[Int32]) -> Result[Array[Double], SamplingError],
+  prompt : Array[Int32],
+  limit : Int32,
+  end_token : Int32?,
 ) -> Result[Generation, SamplingError] {
   let steps : Array[Step] = []
   let result = match
@@ -82,17 +82,17 @@ pub fn generate_from_prompt(
 
 ///|
 pub struct StreamGeneration {
-  tokens : Array[Int]
+  tokens : Array[Int32]
   reason : StopReason
 } derive(Eq, Debug)
 
 ///|
-pub fn StreamGeneration::tokens(self : StreamGeneration) -> Array[Int] {
+pub fn StreamGeneration::tokens(self : StreamGeneration) -> Array[Int32] {
   self.tokens.copy()
 }
 
 ///|
-pub fn StreamGeneration::count(self : StreamGeneration) -> Int {
+pub fn StreamGeneration::count(self : StreamGeneration) -> Int32 {
   self.tokens.length()
 }
 
@@ -108,10 +108,10 @@ pub fn StreamGeneration::reason(self : StreamGeneration) -> StopReason {
 pub fn generate_stream(
   sampler : Sampler,
   rng : ParkMiller,
-  model : (Array[Int]) -> Result[Array[Double], SamplingError],
-  prompt : Array[Int],
-  limit : Int,
-  end_token : Int?,
+  model : (Array[Int32]) -> Result[Array[Double], SamplingError],
+  prompt : Array[Int32],
+  limit : Int32,
+  end_token : Int32?,
   observer : (Step) -> Bool,
 ) -> Result[StreamGeneration, SamplingError] {
   if limit < 0 {
@@ -129,7 +129,7 @@ pub fn generate_stream(
       return Err(InvalidParameter("prompt token must be non-negative"))
     }
   }
-  let tokens : Array[Int] = []
+  let tokens : Array[Int32] = []
   for _ in 0..<limit {
     let context = prompt.copy()
     for token in tokens {

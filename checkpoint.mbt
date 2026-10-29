@@ -5,7 +5,7 @@ pub struct Checkpoint {
   config : Config
   version : Version
   mu : Double
-  steps : Int
+  steps : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -14,7 +14,7 @@ pub fn Checkpoint::mu(self : Checkpoint) -> Double {
 }
 
 ///|
-pub fn Checkpoint::steps(self : Checkpoint) -> Int {
+pub fn Checkpoint::steps(self : Checkpoint) -> Int32 {
   self.steps
 }
 

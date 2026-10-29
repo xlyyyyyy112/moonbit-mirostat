@@ -8,10 +8,18 @@ on:
 permissions:
   contents: read
 
+env:
+  MOONBIT_INSTALL_VERSION: '0.10.18+6c83a7f62'
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   moonbit:
     name: MoonBit on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -20,10 +28,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Windows native compiler
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
       - name: Install MoonBit on Unix
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$MOONBIT_INSTALL_VERSION"
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - name: Install MoonBit on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -32,15 +46,24 @@ jobs:
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
           irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
           "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
-      - name: Check, build, test, and verify generated files
+      - name: Toolchain version
+        run: moon version --all
+      - name: Check all supported targets
+        run: moon check --target all --deny-warn
+      - name: Build all supported targets
+        run: moon build --target all --deny-warn
+      - name: Test JavaScript model-host bridge
         run: |
-          moon version --all
-          moon check --target all --deny-warn
-          moon build --target all --deny-warn
           moon build --target js --release --deny-warn
           node scripts/test_hf_bridge.cjs
-          moon test --target all --deny-warn
-          moon fmt
-          git diff --exit-code
+      - name: Test all supported targets
+        run: moon test --target all --deny-warn
+      - name: Test release
+        run: moon test --release --deny-warn
+      - name: Run minimal example
+        run: moon run cmd/main
+      - name: Verify formatting and generated interfaces
+        run: |
+          moon fmt --check
           moon info
           git diff --exit-code

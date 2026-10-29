@@ -2,9 +2,9 @@
 /// Stateless top-k sampling is useful as a controlled comparison for Mirostat.
 pub fn sample_top_k(
   logits : Array[Double],
-  k : Int,
+  k : Int32,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
     Err(error) => return Err(error)
@@ -23,9 +23,9 @@ pub fn sample_top_k(
 /// Return the smallest top-probability prefix with mass at least threshold.
 pub fn top_p_prefix_size(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
   threshold : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(threshold) ||
     threshold <= 0.0 ||
     threshold > 1.0 ||
@@ -54,7 +54,7 @@ pub fn sample_top_p(
   logits : Array[Double],
   threshold : Double,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let p = match probabilities(logits) {
     Ok(value) => value
     Err(error) => return Err(error)
@@ -108,7 +108,7 @@ pub fn sample_temperature(
   logits : Array[Double],
   temperature : Double,
   uniform : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   let scaled = match with_temperature(logits, temperature) {
     Ok(value) => value
     Err(error) => return Err(error)

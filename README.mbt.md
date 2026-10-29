@@ -12,10 +12,55 @@
 
 本包不运行语言模型、不进行分词、不下载模型权重，也不管理随机数生成器。logits 和随机数由调用方提供。本包不承诺与某个模型运行时完全等价：运行时可能会在 Mirostat 前应用重复惩罚、语法掩码、温度等变换，这些变换会改变输入分布。
 
-## 构建与运行
+## 安装与最小使用
+
+需要 MoonBit 编译器 `moonc >= 0.10.16`。当前 CI 在 Linux、macOS、Windows 上固定使用
+`moonc v0.10.18+6c83a7f62`，Node 桥接测试使用 Node.js 22。
+
+在已有 MoonBit 项目中安装已发布的库：
+
+```sh
+moon add xlyyyyyy112/moonbit-mirostat@0.1.1
+```
+
+在使用它的包的 `moon.pkg` 中加入：
+
+```moonbit nocheck
+///|
+import {
+  "xlyyyyyy112/moonbit-mirostat" @mirostat,
+}
+```
+
+在可执行包的 `main` 函数中调用：
+
+```moonbit nocheck
+///|
+fn main {
+  let config = @mirostat.Config::new(3.0, eta=0.1).unwrap()
+  let sampler = @mirostat.Sampler::new(config, version=@mirostat.Version::v2())
+  let step = sampler.sample([4.0, 2.0, 1.0], 0.42).unwrap()
+  println(step.token())
+}
+```
+
+库的核心算法和 `jsonio` 支持 wasm、wasm-gc、JavaScript 和 native。
+`bridge` 是给 Node/Hugging Face 使用的 CommonJS 导出库，只构建 JavaScript 目标；
+它不是原生命令行程序。
+
+## 从源码构建与运行
+
+```sh
+git clone https://github.com/xlyyyyyy112/moonbit-mirostat.git
+cd moonbit-mirostat
+moon update
+```
+
+仓库示例使用源码中的库，下面的 `cmd/main` 不需要模型权重、Python 或网络服务。
 
 ```sh
 moon check --deny-warn
+moon build --deny-warn
 moon test --deny-warn
 moon run cmd/main
 moon run cmd/experiment
@@ -26,6 +71,24 @@ moon run cmd/process
 moon run cmd/sweep
 moon run cmd/json
 ```
+
+`cmd/main` 会打印 V1/V2 各五步的 token、候选数量和反馈状态。完整 CI 复现命令为：
+
+```sh
+moon version --all
+moon check --target all --deny-warn
+moon build --target all --deny-warn
+moon test --target all --deny-warn
+moon test --release --deny-warn
+moon build --target js --release --deny-warn
+node scripts/test_hf_bridge.cjs
+moon fmt --check
+moon info
+git diff --exit-code
+```
+
+native 构建需要平台 C 编译器及链接器；JS 桥接测试需要 Node.js。
+格式和生成接口应使用 CI 的固定工具链更新，避免不同版本造成格式差异。
 
 - `cmd/main`：为每个算法版本打印五次可复现的采样结果。
 - `cmd/experiment`：用相同的静态 Zipf 分布和随机种子运行两个版本各 1000 次，并输出 CSV 汇总指标。这是确定性的算法测试样例，不是语言模型质量测试。

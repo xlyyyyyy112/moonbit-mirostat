@@ -1,7 +1,7 @@
 ///|
 /// Aggregate diagnostics for a completed sequence of Mirostat steps.
 pub struct TraceSummary {
-  count : Int
+  count : Int32
   mean_surprise : Double
   mean_kept : Double
   mean_absolute_error : Double
@@ -9,7 +9,7 @@ pub struct TraceSummary {
 } derive(Eq, Debug)
 
 ///|
-pub fn TraceSummary::count(self : TraceSummary) -> Int {
+pub fn TraceSummary::count(self : TraceSummary) -> Int32 {
   self.count
 }
 
@@ -112,7 +112,7 @@ pub fn running_surprise(steps : Array[Step]) -> Array[Double] {
 /// The initial entries use all observations available so far.
 pub fn rolling_surprise(
   steps : Array[Step],
-  window : Int,
+  window : Int32,
 ) -> Result[Array[Double], SamplingError] {
   if window < 1 {
     return Err(InvalidParameter("rolling window must be positive"))

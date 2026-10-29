@@ -25,9 +25,9 @@ pub fn Comparison::mean_surprise_gap(self : Comparison) -> Double {
 pub fn compare_scenario(
   config : @mirostat.Config,
   scenario : Scenario,
-  vocabulary : Int,
-  steps : Int,
-  seed : Int,
+  vocabulary : Int32,
+  steps : Int32,
+  seed : Int32,
 ) -> Result[Comparison, @mirostat.SamplingError] {
   if steps < 1 {
     return Err(

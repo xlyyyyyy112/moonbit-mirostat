@@ -2,11 +2,11 @@
 /// A small reproducible RNG for examples, replay fixtures, and portable
 /// sampling. Applications may supply uniforms from their own RNG instead.
 pub struct ParkMiller {
-  mut state : Int
+  mut state : Int32
 } derive(Debug)
 
 ///|
-pub fn ParkMiller::new(seed : Int) -> Result[ParkMiller, SamplingError] {
+pub fn ParkMiller::new(seed : Int32) -> Result[ParkMiller, SamplingError] {
   if seed <= 0 || seed >= 2147483647 {
     return Err(InvalidParameter("seed must be in 1..2147483646"))
   }
@@ -14,14 +14,14 @@ pub fn ParkMiller::new(seed : Int) -> Result[ParkMiller, SamplingError] {
 }
 
 ///|
-pub fn ParkMiller::state(self : ParkMiller) -> Int {
+pub fn ParkMiller::state(self : ParkMiller) -> Int32 {
   self.state
 }
 
 ///|
 /// Schrage's method computes (16807 * state) mod (2^31 - 1) without an
 /// overflowing 32-bit multiplication.
-pub fn ParkMiller::next_int(self : ParkMiller) -> Int {
+pub fn ParkMiller::next_int(self : ParkMiller) -> Int32 {
   let high = self.state / 127773
   let low = self.state % 127773
   let candidate = 16807 * low - 2836 * high

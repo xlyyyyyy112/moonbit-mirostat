@@ -7,8 +7,8 @@ pub struct TraceSpread {
   variance : Double
   median : Double
   p90 : Double
-  minimum_kept : Int
-  maximum_kept : Int
+  minimum_kept : Int32
+  maximum_kept : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -37,12 +37,12 @@ pub fn TraceSpread::p90(self : TraceSpread) -> Double {
 }
 
 ///|
-pub fn TraceSpread::minimum_kept(self : TraceSpread) -> Int {
+pub fn TraceSpread::minimum_kept(self : TraceSpread) -> Int32 {
   self.minimum_kept
 }
 
 ///|
-pub fn TraceSpread::maximum_kept(self : TraceSpread) -> Int {
+pub fn TraceSpread::maximum_kept(self : TraceSpread) -> Int32 {
   self.maximum_kept
 }
 

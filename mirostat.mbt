@@ -3,8 +3,8 @@
 /// This follows the paper's least-squares estimator and uses log base two.
 pub fn zipf_exponent(
   probabilities : Array[Double],
-  order : Array[Int],
-  m : Int,
+  order : Array[Int32],
+  m : Int32,
 ) -> Result[Double, SamplingError] {
   if m < 2 || order.length() != probabilities.length() || order.length() < 2 {
     return Err(InvalidParameter("Zipf estimation needs two ranked tokens"))
@@ -19,8 +19,8 @@ pub fn zipf_exponent(
 ///|
 fn estimate_zipf_prefix(
   probabilities : Array[Double],
-  order : Array[Int],
-  m : Int,
+  order : Array[Int32],
+  m : Int32,
 ) -> Result[Double, SamplingError] {
   let pairs = if m < order.length() { m - 1 } else { order.length() - 1 }
   let mut numerator = 0.0
@@ -54,8 +54,8 @@ fn estimate_zipf_prefix(
 pub fn estimated_k(
   mu : Double,
   exponent : Double,
-  vocabulary : Int,
-) -> Result[Int, SamplingError] {
+  vocabulary : Int32,
+) -> Result[Int32, SamplingError] {
   if !finite(mu) || !finite(exponent) || exponent <= 0.0 || vocabulary <= 0 {
     return Err(InvalidParameter("invalid Mirostat k inputs"))
   }
@@ -99,9 +99,9 @@ pub fn estimated_k(
 /// probabilities. It always keeps at least the most likely token.
 pub fn v2_prefix_size(
   probabilities : Array[Double],
-  order : Array[Int],
+  order : Array[Int32],
   mu : Double,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   if !finite(mu) ||
     order.length() == 0 ||
     order.length() != probabilities.length() {
@@ -181,8 +181,8 @@ fn Sampler::sample_distribution(
 fn Sampler::commit_step(
   self : Sampler,
   p : Array[Double],
-  token : Int,
-  keep : Int,
+  token : Int32,
+  keep : Int32,
 ) -> Result[Step, SamplingError] {
   let observed = match surprise(p[token]) {
     Ok(value) => value
@@ -209,7 +209,7 @@ fn Sampler::commit_step(
 fn Sampler::select_candidates(
   self : Sampler,
   p : Array[Double],
-) -> Result[Array[Int], SamplingError] {
+) -> Result[Array[Int32], SamplingError] {
   match self.version {
     V1 =>
       if p.length() == 1 {
@@ -245,7 +245,7 @@ fn Sampler::select_candidates(
 fn Sampler::select_for_sampling(
   self : Sampler,
   p : Array[Double],
-) -> Result[Array[Int], SamplingError] {
+) -> Result[Array[Int32], SamplingError] {
   match self.version {
     V1 => self.select_candidates(p)
     V2 => v2_candidates(p, self.mu, false)
@@ -257,12 +257,12 @@ fn v2_candidates(
   p : Array[Double],
   mu : Double,
   ranked : Bool,
-) -> Result[Array[Int], SamplingError] {
+) -> Result[Array[Int32], SamplingError] {
   if !finite(mu) || p.length() == 0 {
     return Err(InvalidParameter("invalid V2 candidate inputs"))
   }
   let cutoff = @math.exp(-mu * @math.ln(2.0))
-  let candidates : Array[Int] = []
+  let candidates : Array[Int32] = []
   for token in 0..<p.length() {
     let probability = p[token]
     if !finite(probability) || probability < 0.0 || probability > 1.0 {

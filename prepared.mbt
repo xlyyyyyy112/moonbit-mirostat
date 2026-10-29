@@ -3,7 +3,7 @@
 /// probabilities and complete rank order are computed only once.
 pub struct PreparedRow {
   probabilities : Array[Double]
-  order : Array[Int]
+  order : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -40,14 +40,14 @@ fn PreparedRow::from_normalized(
 }
 
 ///|
-pub fn PreparedRow::vocabulary(self : PreparedRow) -> Int {
+pub fn PreparedRow::vocabulary(self : PreparedRow) -> Int32 {
   self.probabilities.length()
 }
 
 ///|
 pub fn PreparedRow::probability(
   self : PreparedRow,
-  token : Int,
+  token : Int32,
 ) -> Result[Double, SamplingError] {
   if token < 0 || token >= self.probabilities.length() {
     return Err(InvalidParameter("token outside prepared vocabulary"))
@@ -70,7 +70,7 @@ pub fn Sampler::sample_prepared(
         Ok(value) => value
         Err(error) => return Err(error)
       }
-      let prefix : Array[Int] = []
+      let prefix : Array[Int32] = []
       for index in 0..<keep {
         prefix.push(row.order[index])
       }
@@ -94,7 +94,7 @@ pub fn Sampler::sample_prepared(
 fn Sampler::prepared_keep(
   self : Sampler,
   row : PreparedRow,
-) -> Result[Int, SamplingError] {
+) -> Result[Int32, SamplingError] {
   match self.version {
     V1 =>
       if row.vocabulary() == 1 {

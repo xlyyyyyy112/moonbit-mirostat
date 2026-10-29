@@ -2,16 +2,16 @@
 /// Fixed-size online window for monitoring recent surprise without retaining
 /// an entire generation trace. Values are measured in bits.
 pub struct SurpriseWindow {
-  capacity : Int
+  capacity : Int32
   values : Array[Double]
-  mut next : Int
-  mut count : Int
+  mut next : Int32
+  mut count : Int32
   mut total : Double
 } derive(Debug)
 
 ///|
 pub fn SurpriseWindow::new(
-  capacity : Int,
+  capacity : Int32,
 ) -> Result[SurpriseWindow, SamplingError] {
   if capacity < 1 {
     return Err(InvalidParameter("window capacity must be positive"))
@@ -26,12 +26,12 @@ pub fn SurpriseWindow::new(
 }
 
 ///|
-pub fn SurpriseWindow::count(self : SurpriseWindow) -> Int {
+pub fn SurpriseWindow::count(self : SurpriseWindow) -> Int32 {
   self.count
 }
 
 ///|
-pub fn SurpriseWindow::capacity(self : SurpriseWindow) -> Int {
+pub fn SurpriseWindow::capacity(self : SurpriseWindow) -> Int32 {
   self.capacity
 }
 

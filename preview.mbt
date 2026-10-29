@@ -1,20 +1,20 @@
 ///|
 /// Candidate-set diagnostics computed without drawing a token or updating mu.
 pub struct Preview {
-  vocabulary : Int
-  kept_tokens : Int
+  vocabulary : Int32
+  kept_tokens : Int32
   retained_mass : Double
   expected_surprise : Double
   mu : Double
 } derive(Eq, Debug)
 
 ///|
-pub fn Preview::vocabulary(self : Preview) -> Int {
+pub fn Preview::vocabulary(self : Preview) -> Int32 {
   self.vocabulary
 }
 
 ///|
-pub fn Preview::kept_tokens(self : Preview) -> Int {
+pub fn Preview::kept_tokens(self : Preview) -> Int32 {
   self.kept_tokens
 }
 

@@ -4,15 +4,15 @@ pub struct Config {
   tau : Double
   eta : Double
   initial_mu : Double
-  m : Int
+  m : Int32
 } derive(Eq, Debug)
 
 ///|
 pub fn Config::new(
   tau : Double,
-  eta? : Double = 0.1,
-  initial_mu? : Double = 2.0 * tau,
-  m? : Int = 100,
+  eta~ : Double = 0.1,
+  initial_mu~ : Double = 2.0 * tau,
+  m~ : Int32 = 100,
 ) -> Result[Config, SamplingError] {
   if !finite(tau) || tau <= 0.0 {
     return Err(InvalidParameter("tau must be finite and positive"))
@@ -45,7 +45,7 @@ pub fn Config::initial_mu(self : Config) -> Double {
 }
 
 ///|
-pub fn Config::m(self : Config) -> Int {
+pub fn Config::m(self : Config) -> Int32 {
   self.m
 }
 
@@ -67,16 +67,16 @@ pub fn Version::v2() -> Version {
 
 ///|
 pub struct Step {
-  token : Int
+  token : Int32
   original_probability : Double
   observed_surprise : Double
-  kept_tokens : Int
+  kept_tokens : Int32
   mu_before : Double
   mu_after : Double
 } derive(Eq, Debug)
 
 ///|
-pub fn Step::token(self : Step) -> Int {
+pub fn Step::token(self : Step) -> Int32 {
   self.token
 }
 
@@ -91,7 +91,7 @@ pub fn Step::observed_surprise(self : Step) -> Double {
 }
 
 ///|
-pub fn Step::kept_tokens(self : Step) -> Int {
+pub fn Step::kept_tokens(self : Step) -> Int32 {
   self.kept_tokens
 }
 
@@ -111,11 +111,11 @@ pub struct Sampler {
   config : Config
   version : Version
   mut mu : Double
-  mut steps : Int
+  mut steps : Int32
 } derive(Debug)
 
 ///|
-pub fn Sampler::new(config : Config, version? : Version = V1) -> Sampler {
+pub fn Sampler::new(config : Config, version~ : Version = V1) -> Sampler {
   { config, version, mu: config.initial_mu, steps: 0, }
 }
 
@@ -125,7 +125,7 @@ pub fn Sampler::mu(self : Sampler) -> Double {
 }
 
 ///|
-pub fn Sampler::steps(self : Sampler) -> Int {
+pub fn Sampler::steps(self : Sampler) -> Int32 {
   self.steps
 }
 
